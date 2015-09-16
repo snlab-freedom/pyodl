@@ -36,7 +36,10 @@ class ODLConnector(object):
 
     @property
     def status(self):
-        return self.connector['stp-status-aware-node-connector:status']
+        try:
+            return self.connector['stp-status-aware-node-connector:status']
+        except KeyError:
+            return None
 
     @property
     def port_number(self):

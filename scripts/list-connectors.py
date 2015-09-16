@@ -43,6 +43,7 @@ if __name__ == "__main__":
         print "-"*80
         connectors = node.get_connectors()
         for connector in connectors.values():
-            print "%40s %20s %20s" % (connector.id,
+            print "%30s %10s %20s %20s" % (connector.id,
+                                      connector.status,
                                       connector.hardware_address,
                                       connector.name)
