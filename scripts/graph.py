@@ -23,10 +23,20 @@ from odl.topology import ODLTopology
 from odl.instance import ODLInstance
 
 import networkx as nx
+import os
+import sys
 
 if __name__ == "__main__":
-    server = "http://131.215.207.90:8080"
-    credentials = ("admin", "admin")
+    try:
+        server = os.environ["ODL_URL"]
+        user = os.environ["ODL_USER"]
+        password = os.environ["ODL_PASS"]
+    except KeyError:
+        print "Please provide all environment vairables."
+        print "Read the README.md for more information."
+        sys.exit(1)
+
+    credentials = (user, password)
 
     odl = ODLInstance(server, credentials)
     topology = ODLTopology(server, credentials, odl)
