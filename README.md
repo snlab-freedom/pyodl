@@ -1,7 +1,17 @@
 # README
 
+This is a python library and scripts sample to handle OpenDayLight instance.
 
-Unfortunately, python3 is not available in RHEL 6.x. So please use python2.x.
+## Installing
+
+You need at least a python2.7 installed. Also install the python modules
+dependencies:
+
+```
+ $ sudo pip install -r requirements.txt
+```
+
+## Running
 
 First export the PYTHONPATH env:
 
@@ -9,10 +19,13 @@ First export the PYTHONPATH env:
  $ export PYTHONPATH=.:$PYTHONPATH
 ```
 
-Now, install the dependencies:
+Also, you need to export the variables with the server address/port and your
+credentials:
 
 ```
- $ sudo pip install -r requirements.txt
+ $ export ODL_URL="http://127.0.0.1:8080"
+ $ export ODL_USER="admin"
+ $ export ODL_PASS="admin"
 ```
 
 Finnaly, you are able to run any script inside `scripts`.
