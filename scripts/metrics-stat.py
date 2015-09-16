@@ -2,6 +2,7 @@ import httplib2
 import requests
 import json
 import sys
+import os
 from requests.exceptions import ConnectionError
 
 # Connect to the ODL Controller
@@ -18,7 +19,7 @@ def odl_connect(url, user, pas):
 
 # Receives a JSON ODL object and the Switch
 # Returns the sum of byte count and packet count for each Aggregate Table 
-def sum_lowagg(jobj,switch):
+def sum_flowagg(jobj,switch):
 
     aggflowbyte=0;
     aggflowpacket=0;
@@ -28,9 +29,9 @@ def sum_lowagg(jobj,switch):
             for keyA in key['flow-node-inventory:table']:
                 for keyB in keyA['opendaylight-flow-statistics:aggregate-flow-statistics']:
                     if keyB == 'byte-count':
-                        aggFlowByte = aggFlowByte + keyA['opendaylight-flow-statistics:aggregate-flow-statistics'][keyB]
+                        aggflowbyte = aggflowbyte + keyA['opendaylight-flow-statistics:aggregate-flow-statistics'][keyB]
                     if keyB == 'packet-count':
-                        aggFlowPacket = aggFlowPacket + keyA['opendaylight-flow-statistics:aggregate-flow-statistics'][keyB]
+                        aggflowpacket = aggflowpacket + keyA['opendaylight-flow-statistics:aggregate-flow-statistics'][keyB]
         else:
             next
 
@@ -41,15 +42,19 @@ def sum_lowagg(jobj,switch):
 
 
 
+## Main
+try:
+    server = os.environ["ODL_URL"]
+    user = os.environ["ODL_USER"]
+    password = os.environ["ODL_PASS"]
+except KeyError:
+    print "Please provide all environment vairables."
+    print "Read the README.md for more information."
+    sys.exit(1)
 
-
-
-
-
-
-
-obj = ODLConnect("http://131.215.207.57:8080/restconf/operational/opendaylight-inventory:nodes/", "admin", "admin")
-by, cnt = SUMFlowAgg(obj,"QTFCA61380001")
+#credentials = (user, password)
+obj = odl_connect(server, user, password)
+by, cnt = sum_flowagg(obj,"QTFCA61380001")
 print by
 print cnt
 #print 'Switch: QTFCA61380001, Bytes: %d, Packets: %d' % by, cnt
