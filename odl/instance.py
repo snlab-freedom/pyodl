@@ -33,9 +33,7 @@ class ODLInstance(object):
         self.credentials = credentials
         self.headers = { 'Content-type' : 'application/json' }
 
-    def get_inventory_nodes(self):
-        endpoint = "/restconf/operational/opendaylight-inventory:nodes/"
-
+    def get(self, endpoint):
         try:
             response = requests.get(self.server + endpoint,
                                     headers=self.headers,
@@ -50,6 +48,16 @@ class ODLInstance(object):
             sys.exit(2)
 
         return json.loads(response.text)
+
+    def post(self, endpoint, data):
+        pass
+
+    def delete(self, endpoint):
+        pass
+
+    def get_inventory_nodes(self):
+        endpoint = "/restconf/operational/opendaylight-inventory:nodes/"
+        return self.get(endpoint)
 
     def get_nodes(self):
         inventory = self.get_inventory_nodes()

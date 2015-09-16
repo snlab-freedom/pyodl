@@ -21,9 +21,6 @@
 
 import json
 import sys
-import requests
-
-#from odl.link import ODLLink
 
 class ODLTopology(object):
     def __init__(self, server, credentials, odl_instance):
@@ -35,20 +32,9 @@ class ODLTopology(object):
     def get_topology(self):
         endpoint = "/restconf/operational/network-topology:network-topology/"
 
-        try:
-            response = requests.get(self.server + endpoint,
-                                    headers=self.headers,
-                                    auth=self.credentials)
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
+        result = self.odl_instance.get(endpoint)
 
-        # Consider any status other than 2xx an error
-        if not response.status_code // 100 == 2:
-            print "Error: Unexpected response", format(response)
-            sys.exit(2)
-
-        return json.loads(response.text)['network-topology']['topology'][0]
+        return result['network-topology']['topology'][0]
 
     def get_nodes(self):
         topology = self.get_topology()
@@ -60,5 +46,3 @@ class ODLTopology(object):
             return topology['link']
         except KeyError:
             return []
-#        for link in topology['link']:
-#            yield ODLLink(link, self.odl_instance)
