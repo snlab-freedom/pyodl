@@ -35,3 +35,7 @@ Now we have few scripts inside scripts directory.
 ```
  $ python scripts/topology.py
 ```
+
+## Parsing OpenFlow messages
+
+Please open `PARSER.md`.

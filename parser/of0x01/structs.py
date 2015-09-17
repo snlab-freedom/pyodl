@@ -1,6 +1,6 @@
-from ofp.consts import *
-from ofp.enums import *
-from ofp.types import *
+from parser.of0x01.consts import *
+from parser.of0x01.enums import *
+from parser.of0x01.types import *
 
 class GenericStruct(object):
     def __init__(self, **kwargs):
@@ -17,11 +17,12 @@ class GenericStruct(object):
             hexa += getattr(self, field).pack()
         return hexa
 
-    def unpack_from(self, buff):
+    def unpack_from(self, buff, offset=0):
         begin = 0
         for field in self.Meta.build_order:
             size = getattr(self, field).get_size()
             getattr(self,field).unpack_from(buff, offset=begin)
+            #getattr(self,field).unpack_from(buff)
             begin += size
 
     def get_size(self):

@@ -50,3 +50,16 @@ class OFPType(GenericEnum):
     # Controller/Switch message
     OFPT_QUEUE_GET_CONFIG_REQUEST = 20
     OFPT_QUEUE_GET_CONFIG_REPLY = 21
+
+class OFPErrorType(GenericEnum):
+    """
+    Error Type
+    """
+    OFPET_HELLO_FAILED = 0     # Hello protocol failed.
+    OFPET_BAD_REQUEST = 1      # Request was not understood.
+    OFPET_BAD_ACTION = 2       # Error in action description.
+    OFPET_FLOW_MOD_FAILED = 3  # Problem modifying flow entry.
+    OFPET_PORT_MOD_FAILED = 4  # Port mod request failed.
+    OFPET_QUEUE_OP_FAILED = 5  # Queue operation failed.
+
+
