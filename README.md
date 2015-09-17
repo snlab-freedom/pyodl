@@ -1,6 +1,6 @@
 # README
 
-This is a python library and scripts sample to handle OpenDayLight instance.
+This is a python library and sample scripts to handle OpenDayLight instance.
 
 ## Installing
 
