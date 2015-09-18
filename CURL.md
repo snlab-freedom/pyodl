@@ -3,14 +3,14 @@
 #### Getting table 0 of openflow:1 in /config/ data store:
 
 ```bash
-$ curl -v -X GET -H "Content-Type: application/json" -H "Accept: application/json" --user ${ODL_USER}:${ODL_PASS} \
+$ curl -v -X GET -H "Accept: application/json" --user ${ODL_USER}:${ODL_PASS} \
       ${ODL_URL}/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/ | python -mjson.tool
 ```
 
 #### Getting table 0 of openflow:1 in /operational/ data store:
 
 ```bash
-$ curl -v -X GET -H "Content-Type: application/json" -H "Accept: application/json" --user ${ODL_USER}:${ODL_PASS} \
+$ curl -v -X GET -H "Accept: application/json" --user ${ODL_USER}:${ODL_PASS} \
       ${ODL_URL}/restconf/operational/opendaylight-inventory:nodes/node/openflow:1/table/0/ | python -mjson.tool
 ```
 #### Inserting flow id 1 in table 0 of openflow:1 node:
