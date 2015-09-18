@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flow xmlns="urn:opendaylight:flow:inventory">
+    <instructions>
+        <instruction>
+            <order>0</order>
+            <apply-actions>
+                <action>
+                    <order>0</order>
+                    <drop-action/>
+                </action>
+            </apply-actions>
+        </instruction>
+    </instructions>
+    <table_id>0</table_id>
+    <id>1</id>
+    <match>
+        <ethernet-match>
+            <ethernet-type>
+                <type>2048</type>
+            </ethernet-type>
+        </ethernet-match>
+        <in-port>1</in-port>
+    </match>
+    <hard-timeout>0</hard-timeout>
+    <cookie>10</cookie>
+    <idle-timeout>0</idle-timeout>
+    <flow-name>drop-all</flow-name>
+    <priority>200</priority>
+</flow>
