@@ -26,7 +26,7 @@ import requests
 from odl.flow import ODLFlow
 from odl.node import ODLNode
 from odl.table import ODLTable
-from odl.exceptions import ODL404
+from odl.exceptions import ODL404, NodeNotFound
 
 class ODLInstance(object):
     def __init__(self, server, credentials):
@@ -43,7 +43,7 @@ class ODLInstance(object):
             print e
             sys.exit(1)
 
-        #print "DEBUG: ODLInstance:", self.server + endpoint
+        print "DEBUG: ODLInstance: GET", self.server + endpoint
 
         if response.status_code == 404:
             raise ODL404("Endpoint not found: %s" % self.server + endpoint)
@@ -57,6 +57,27 @@ class ODLInstance(object):
 
     def post(self, endpoint, data):
         pass
+
+    def put(self, endpoint, data, content="application/json"):
+        headers = {'Content-type': content }
+        try:
+            response = requests.put(self.server + endpoint,
+                                    data = data,
+                                    headers = headers,
+                                    auth = self.credentials)
+        except requests.exceptions.RequestException as e:
+            print e
+            sys.exit(1)
+
+        print "DEBUG: ODLInstance: PUT", self.server + endpoint
+
+        if response.status_code == 404:
+            raise ODL404("Endpoint not found: %s" % self.server + endpoint)
+
+        # Consider any status other than 2xx an error
+        if not response.status_code // 100 == 2:
+            print "Error: Unexpected response", format(response)
+            sys.exit(2)
 
     def delete(self, endpoint):
         pass
@@ -79,7 +100,7 @@ class ODLInstance(object):
         try:
             return nodes[id]
         except KeyError:
-            return None
+            raise NodeNotFound("Node %s not found" % id)
 
     def get_connector_by_id(self, id):
         nodes = self.get_nodes()

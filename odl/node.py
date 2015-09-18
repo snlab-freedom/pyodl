@@ -21,6 +21,7 @@
 
 from odl.connector import ODLConnector
 from odl.table import ODLTable
+from odl.exceptions import TableNotFound
 
 class ODLNode(object):
     """
@@ -63,7 +64,18 @@ class ODLNode(object):
 
     def get_tables(self):
         tables = self.node['flow-node-inventory:table']
-        return map(lambda x: ODLTable(x, self), tables)
+        result = {}
+        for table in tables:
+            obj = ODLTable(table, self)
+            result[obj.id] = obj
+        return result
+
+    def get_table_by_id(self, id):
+        tables = self.get_tables()
+        try:
+            return tables[int(id)]
+        except KeyError:
+            raise TableNotFound("Table %s not found" % id)
 
     def get_connectors(self):
         connectors = self.node['node-connector']

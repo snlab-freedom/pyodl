@@ -42,7 +42,7 @@ if __name__ == "__main__":
     for node in nodes.values():
         tables = node.get_tables()
         print "Node: ", node, node.ip_address," Tables: ", len(tables)
-        for table in tables:
+        for table in tables.values():
             flows = table.get_operational_flows()
             if len(flows) > 0:
                 print "%20s %10s %5s %5s %10s %20s" % ("id",

@@ -78,3 +78,10 @@ class ODLTable(object):
             flows = []
 
         return map(lambda x: ODLFlow(x, self), flows)
+
+    def put_flow_from_data(self, data, flow_id):
+        odl_instance = self.node.odl_instance
+        endpoint = self.config_endpoint + 'flow/' + flow_id
+        return odl_instance.put(endpoint,
+                                data=data,
+                                content="application/xml")
