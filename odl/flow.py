@@ -51,12 +51,21 @@ class ODLFlow(object):
         return self.flow['cookie']
 
     def _get_flow_stats(self):
-        return self.flow['opendaylight-flow-statistics:flow-statistics']
+        try:
+            return self.flow['opendaylight-flow-statistics:flow-statistics']
+        except KeyError:
+            return {}
 
     def get_byte_count(self):
         stats = self._get_flow_stats()
-        return stats['byte-count']
+        try:
+            return stats['byte-count']
+        except KeyError:
+            return None
 
     def get_packet_count(self):
         stats = self._get_flow_stats()
-        return stats['packet-count']
+        try:
+            return stats['packet-count']
+        except KeyError:
+            return None

@@ -26,6 +26,7 @@ import requests
 from odl.flow import ODLFlow
 from odl.node import ODLNode
 from odl.table import ODLTable
+from odl.exceptions import ODL404
 
 class ODLInstance(object):
     def __init__(self, server, credentials):
@@ -41,6 +42,11 @@ class ODLInstance(object):
         except requests.exceptions.RequestException as e:
             print e
             sys.exit(1)
+
+        #print "DEBUG: ODLInstance:", self.server + endpoint
+
+        if response.status_code == 404:
+            raise ODL404("Endpoint not found: %s" % self.server + endpoint)
 
         # Consider any status other than 2xx an error
         if not response.status_code // 100 == 2:

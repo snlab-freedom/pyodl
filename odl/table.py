@@ -20,6 +20,9 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 from odl.flow import ODLFlow
+from odl.exceptions import ODL404
+
+import json
 
 class ODLTable(object):
     """
@@ -27,7 +30,19 @@ class ODLTable(object):
     """
     def __init__(self, table, node):
         self.table = table
+        self.config_table = {}
         self.node = node
+
+        base = "/restconf/operational/opendaylight-inventory:nodes"
+        self.endpoint = "%s/node/%s/table/%s/" % (base,
+                                                  self.node.id,
+                                                  self.id)
+
+        self.config_endpoint = self.endpoint.replace("operational",
+                                                     "config")
+
+        # Update table json
+        self.update()
 
     def __repr__(self):
         return "<ODLTable: %s>" % self.id
@@ -36,9 +51,29 @@ class ODLTable(object):
     def id(self):
         return self.table['id']
 
-    def get_flows(self):
+    def update(self):
+        odl_instance = self.node.odl_instance
+        result = odl_instance.get(self.endpoint)
+        self.table = result['flow-node-inventory:table'][0]
+
+        try:
+            result = odl_instance.get(self.config_endpoint)
+            self.config_table = result['flow-node-inventory:table'][0]
+        except ODL404 as e:
+            #print "DEBUG: Config for this table not found"
+            pass
+
+    def get_operational_flows(self):
         try:
             flows = self.table['flow']
+        except KeyError:
+            flows = []
+
+        return map(lambda x: ODLFlow(x, self), flows)
+
+    def get_config_flows(self):
+        try:
+            flows = self.config_table['flow']
         except KeyError:
             flows = []
 

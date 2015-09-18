@@ -41,9 +41,9 @@ if __name__ == "__main__":
     nodes = odl.get_nodes()
     for node in nodes.values():
         tables = node.get_tables()
-        print "Node: ", node, " Tables: ", len(tables)
+        print "Node: ", node, node.ip_address," Tables: ", len(tables)
         for table in tables:
-            flows = table.get_flows()
+            flows = table.get_config_flows()
             if len(flows) > 0:
                 print "%20s %10s %5s %5s %10s %20s" % ("id",
                                                        "priority",
