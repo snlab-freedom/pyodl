@@ -36,10 +36,14 @@ Now we have few scripts inside scripts directory.
  $ python scripts/topology.py
 ```
 
+## Examples
+
+Please visit the `scripts` folder.
+
 ## Running queries from curl
 
-Please open `CURL.md`.
-
+To insert and remove flows, you can use this library (see `scripts` folder), but
+if you need to test using curl directly please open `CURL.md`.
 
 ## Parsing OpenFlow messages
 
