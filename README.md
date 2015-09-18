@@ -28,17 +28,9 @@ credentials:
  $ export ODL_PASS="admin"
 ```
 
-Finnaly, you are able to run any script inside `scripts`.
-
-Now we have few scripts inside scripts directory.
-
-```
- $ python scripts/topology.py
-```
-
 ## Examples
 
-Please visit the `scripts` folder.
+For examples, please visit the `scripts` folder.
 
 ## Running queries from curl
 
