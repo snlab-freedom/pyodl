@@ -26,7 +26,8 @@ import requests
 from odl.flow import ODLFlow
 from odl.node import ODLNode
 from odl.table import ODLTable
-from odl.exceptions import ODL404, NodeNotFound
+
+from odl.exceptions import *
 
 class ODLInstance(object):
     def __init__(self, server, credentials):
@@ -34,69 +35,73 @@ class ODLInstance(object):
         self.credentials = credentials
         self.headers = { 'Content-type' : 'application/json' }
 
-    def get(self, endpoint):
-        try:
-            response = requests.get(self.server + endpoint,
-                                    headers=self.headers,
-                                    auth=self.credentials)
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
+    def request(self, method, endpoint, auth, data=None, content=None):
+        if content:
+            headers = {'Content-type': content}
+        else:
+            headers = self.headers
 
-        print "DEBUG: ODLInstance: GET", self.server + endpoint
+        if method == "GET":
+            try:
+                response = requests.get(endpoint,
+                                        headers = headers,
+                                        auth = auth)
+            except requests.exceptions.RequestException as e:
+                raise ODLErrorOnGET(e)
+        elif method == "PUT":
+            try:
+                response = requests.put(endpoint,
+                                        headers = headers,
+                                        data = data,
+                                        auth = auth)
+            except requests.exceptions.RequestException as e:
+                raise ODLErrorOnPUT(e)
+        elif method == "DELETE":
+            try:
+                response = requests.delete(endpoint,
+                                           headers = headers,
+                                           auth = auth)
+            except requests.exceptions.RequestException as e:
+                raise ODLErrorOnDELETE(e)
+        else:
+            raise NotImplemented("Method %s not implemented." % method)
 
         if response.status_code == 404:
             raise ODL404("Endpoint not found: %s" % self.server + endpoint)
 
         # Consider any status other than 2xx an error
         if not response.status_code // 100 == 2:
-            print "Error: Unexpected response", format(response)
-            sys.exit(2)
+            raise UnexpectedResponse(format(response))
 
+        #print "DEBUG: ODLInstance: %s %s" % (method, endpoint)
+        return response
+
+    def get(self, endpoint):
+        """
+        Requests a GET to endpoint and returns the json.
+        """
+        response = self.request(method = "GET",
+                                endpoint = self.server + endpoint,
+                                auth = self.credentials)
         return json.loads(response.text)
 
-    def post(self, endpoint, data):
-        pass
-
     def put(self, endpoint, data, content="application/json"):
-        headers = {'Content-type': content }
-        try:
-            response = requests.put(self.server + endpoint,
-                                    data = data,
-                                    headers = headers,
-                                    auth = self.credentials)
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
-
-        print "DEBUG: ODLInstance: PUT", self.server + endpoint
-
-        if response.status_code == 404:
-            raise ODL404("Endpoint not found: %s" % self.server + endpoint)
-
-        # Consider any status other than 2xx an error
-        if not response.status_code // 100 == 2:
-            print "Error: Unexpected response", format(response)
-            sys.exit(2)
+        """
+        Sends data via PUT to endpoint.
+        """
+        response = self.request(method = "PUT",
+                                endpoint = self.server + endpoint,
+                                data = data,
+                                auth = self.credentials,
+                                content = content)
 
     def delete(self, endpoint):
-        try:
-            response = requests.delete(self.server + endpoint,
-                                       headers = self.headers,
-                                       auth = self.credentials)
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
-
-        print "DEBUG: ODLInstance: DELETE", self.server + endpoint
-
-        if response.status_code == 404:
-            raise ODL404("Endpoint not found: %s" % self.server + endpoint)
-
-        # Consider any status other than 2xx an error
-        if not response.status_code // 100 == 2:
-            print "Error: Unexpected response", format(response)
-            sys.exit(2)
+        """
+        Sends a DELETE to endpoint.
+        """
+        response = self.request(method = "DELETE",
+                                endpoint = self.server + endpoint,
+                                auth = self.credentials)
 
     def get_inventory_nodes(self):
         endpoint = "/restconf/operational/opendaylight-inventory:nodes/"
