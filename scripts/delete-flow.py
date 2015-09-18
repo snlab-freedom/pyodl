@@ -21,9 +21,13 @@
 
 from odl.topology import ODLTopology
 from odl.instance import ODLInstance
+from odl.exceptions import NodeNotFound, TableNotFound, FlowNotFound
+
+from argparse import ArgumentParser
 
 import os
 import sys
+import argparse
 
 if __name__ == "__main__":
     try:
@@ -35,27 +39,35 @@ if __name__ == "__main__":
         print "Read the README.md for more information."
         sys.exit(1)
 
-    credentials = (user, password)
+    parser = ArgumentParser(description='Delete a flow from table node.')
+    parser.add_argument('-n', '--node', help='Node ID', nargs=1)
+    parser.add_argument('-t', '--table', help='Table ID', nargs=1)
+    parser.add_argument('-i', '--id', help='Flow ID', nargs=1)
 
+    args = parser.parse_args()
+
+    if (args.node is None or
+        args.table is None or
+        args.id is None):
+        parser.print_help()
+        sys.exit(1)
+
+    credentials = (user, password)
     odl = ODLInstance(server, credentials)
-    nodes = odl.get_nodes()
-    for node in nodes.values():
-        tables = node.get_tables()
-        print "Node: ", node, node.ip_address," Tables: ", len(tables)
-        for table in tables.values():
-            flows = table.get_operational_flows()
-            if len(flows) > 0:
-                print "%20s %10s %5s %5s %10s %20s" % ("id",
-                                                       "priority",
-                                                       "idle",
-                                                       "hard",
-                                                       "bytes",
-                                                       "packets")
-                print "-"*80
-                for flow in flows.values():
-                    print "%20s %10s %5s %5s %10s %20s" % (flow.id,
-                                                           flow.priority,
-                                                           flow.idle_timeout,
-                                                           flow.hard_timeout,
-                                                           flow.get_byte_count(),
-                                                           flow.get_packet_count())
+
+    try:
+        # Get the node object
+        node = odl.get_node_by_id(args.node[0])
+
+        # Get the table object
+        table = node.get_table_by_id(args.table[0])
+
+        # Get the flow object
+        flow = table.get_flow_by_id(args.id[0])
+
+        # Remove flow
+        flow.delete()
+
+    except (NodeNotFound, TableNotFound, FlowNotFound) as e:
+        print e
+        sys.exit()

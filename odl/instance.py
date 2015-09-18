@@ -80,7 +80,23 @@ class ODLInstance(object):
             sys.exit(2)
 
     def delete(self, endpoint):
-        pass
+        try:
+            response = requests.delete(self.server + endpoint,
+                                       headers = self.headers,
+                                       auth = self.credentials)
+        except requests.exceptions.RequestException as e:
+            print e
+            sys.exit(1)
+
+        print "DEBUG: ODLInstance: DELETE", self.server + endpoint
+
+        if response.status_code == 404:
+            raise ODL404("Endpoint not found: %s" % self.server + endpoint)
+
+        # Consider any status other than 2xx an error
+        if not response.status_code // 100 == 2:
+            print "Error: Unexpected response", format(response)
+            sys.exit(2)
 
     def get_inventory_nodes(self):
         endpoint = "/restconf/operational/opendaylight-inventory:nodes/"

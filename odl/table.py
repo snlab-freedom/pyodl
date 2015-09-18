@@ -20,7 +20,7 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 from odl.flow import ODLFlow
-from odl.exceptions import ODL404
+from odl.exceptions import ODL404, FlowNotFound
 
 import json
 
@@ -69,7 +69,11 @@ class ODLTable(object):
         except KeyError:
             flows = []
 
-        return map(lambda x: ODLFlow(x, self), flows)
+        result = {}
+        for flow in flows:
+            obj = ODLFlow(flow, self)
+            result[obj.id] = obj
+        return result
 
     def get_config_flows(self):
         try:
@@ -77,7 +81,19 @@ class ODLTable(object):
         except KeyError:
             flows = []
 
-        return map(lambda x: ODLFlow(x, self), flows)
+        result = {}
+        for flow in flows:
+            obj = ODLFlow(flow, self)
+            result[obj.id] = obj
+        return result
+
+    def get_flow_by_id(self, id):
+        # For now, this is only used in config context.
+        flows = self.get_config_flows()
+        try:
+            return flows[id]
+        except KeyError:
+            raise FlowNotFound("Flow id %s not found" % id)
 
     def put_flow_from_data(self, data, flow_id):
         odl_instance = self.node.odl_instance

@@ -19,6 +19,8 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
+from odl.exceptions import ODL404, FlowNotFound
+
 class ODLFlow(object):
     """
     This class represents a switch table in OpenDayLight.
@@ -69,3 +71,12 @@ class ODLFlow(object):
             return stats['packet-count']
         except KeyError:
             return None
+
+    def delete(self):
+        odl_instance = self.table.node.odl_instance
+        endpoint = self.table.config_endpoint + 'flow/' + self.id
+
+        try:
+            odl_instance.delete(endpoint)
+        except ODL404:
+            raise FlowNotFound("Flow id %s not found" % self.id)

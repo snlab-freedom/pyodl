@@ -52,7 +52,7 @@ if __name__ == "__main__":
                                                        "bytes",
                                                        "packets")
                 print "-"*80
-                for flow in flows:
+                for flow in flows.values():
                     print "%20s %10s %5s %5s %10s %20s" % (flow.id,
                                                            flow.priority,
                                                            flow.idle_timeout,
