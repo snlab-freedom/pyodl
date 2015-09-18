@@ -116,3 +116,11 @@ class ODLTable(object):
         return odl_instance.put(endpoint,
                                 data=data,
                                 content="application/xml")
+
+    def delete_flows(self):
+        """
+        Delete all flows in this table (config endpoint).
+        """
+        flows = self.get_config_flows()
+        for flow in flows.values():
+           flow.delete()
