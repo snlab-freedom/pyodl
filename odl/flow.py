@@ -53,12 +53,19 @@ class ODLFlow(object):
         return self.flow['cookie']
 
     def _get_flow_stats(self):
+        """
+        Return a dict with the flow statics when exists, if not return a empty
+        dict.
+        """
         try:
             return self.flow['opendaylight-flow-statistics:flow-statistics']
         except KeyError:
             return {}
 
     def get_byte_count(self):
+        """
+        Return the number of bytes that matches with this flow.
+        """
         stats = self._get_flow_stats()
         try:
             return stats['byte-count']
@@ -66,6 +73,9 @@ class ODLFlow(object):
             return None
 
     def get_packet_count(self):
+        """
+        Return the number of packets that matches with this flow.
+        """
         stats = self._get_flow_stats()
         try:
             return stats['packet-count']
@@ -73,6 +83,10 @@ class ODLFlow(object):
             return None
 
     def delete(self):
+        """
+        Delete a flow from config endpoint. We cannot delete flows in
+        operational endpoint only.
+        """
         odl_instance = self.table.node.odl_instance
         endpoint = self.table.config_endpoint + 'flow/' + self.id
 

@@ -63,6 +63,9 @@ class ODLNode(object):
         return self.node['flow-node-inventory:software']
 
     def get_tables(self):
+        """
+        Return a dict with all tables of this node.
+        """
         tables = self.node['flow-node-inventory:table']
         result = {}
         for table in tables:
@@ -71,6 +74,9 @@ class ODLNode(object):
         return result
 
     def get_table_by_id(self, id):
+        """
+        Return a table based on id.
+        """
         tables = self.get_tables()
         try:
             return tables[int(id)]
@@ -78,6 +84,9 @@ class ODLNode(object):
             raise TableNotFound("Table %s not found" % id)
 
     def get_connectors(self):
+        """
+        Return a dict with all connectors of this node.
+        """
         connectors = self.node['node-connector']
         result = {}
         for connector in connectors:
@@ -86,6 +95,9 @@ class ODLNode(object):
         return result
 
     def get_connector_by_id(self, id):
+        """
+        Return a connector based on id.
+        """
         connectors = self.get_connectors()
         try:
             return connectors[id]

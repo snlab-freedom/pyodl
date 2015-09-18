@@ -52,6 +52,9 @@ class ODLTable(object):
         return self.table['id']
 
     def update(self):
+        """
+        Queries the server and retrieve a updated table.
+        """
         odl_instance = self.node.odl_instance
         result = odl_instance.get(self.endpoint)
         self.table = result['flow-node-inventory:table'][0]
@@ -64,6 +67,9 @@ class ODLTable(object):
             pass
 
     def get_operational_flows(self):
+        """
+        Return a dict with all flows in operational endpoint (in this table).
+        """
         try:
             flows = self.table['flow']
         except KeyError:
@@ -76,6 +82,9 @@ class ODLTable(object):
         return result
 
     def get_config_flows(self):
+        """
+        Return a dict with all flows in config endpoint (in this table).
+        """
         try:
             flows = self.config_table['flow']
         except KeyError:
@@ -88,6 +97,9 @@ class ODLTable(object):
         return result
 
     def get_flow_by_id(self, id):
+        """
+        Return a flow from this table, based on id.
+        """
         # For now, this is only used in config context.
         flows = self.get_config_flows()
         try:
@@ -96,6 +108,9 @@ class ODLTable(object):
             raise FlowNotFound("Flow id %s not found" % id)
 
     def put_flow_from_data(self, data, flow_id):
+        """
+        Insert a flow in this table (config endpoint) based on raw xml data.
+        """
         odl_instance = self.node.odl_instance
         endpoint = self.config_endpoint + 'flow/' + flow_id
         return odl_instance.put(endpoint,
