@@ -59,10 +59,12 @@ class ODLTable(object):
 
     def _get_aggregate_stats(self):
         """
-        Return a dict with the aggregate statistics when exists, if not return an empty dict
+        Return a dict with the aggregate statistics when exists, if not return
+        an empty dict
         """
         try:
-            return self.table['opendaylight-flow-statistics:aggregate-flow-statistics']
+            key = 'opendaylight-flow-statistics:aggregate-flow-statistics'
+            return self.table[key]
         except KeyError:
             return {}
 
