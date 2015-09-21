@@ -53,6 +53,15 @@ class ODLTable(object):
     def id(self):
         return self.table['id']
 
+    def _get_aggregate_stats(self):
+        """
+        Return a dict with the aggregate statistics when exists, if not return an empty dict
+        """
+        try:
+            return self.table['opendaylight-flow-statistics:aggregate-flow-statistics']
+        except KeyError:
+            return {}
+
     def update(self):
         """
         Queries the server and retrieve a updated table.
@@ -82,6 +91,16 @@ class ODLTable(object):
             obj = ODLFlow(flow, self)
             result[obj.id] = obj
         return result
+
+    def get_aggregate_byte(self):
+        """
+        Return the number of aggregate byte count for a table
+        """
+        stats = self._get_aggregate_stats()
+        try:
+            return stats['byte-count']
+        except KeyError:
+            return None
 
     def get_config_flows(self):
         """
