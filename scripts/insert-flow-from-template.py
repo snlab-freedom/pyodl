@@ -81,7 +81,7 @@ if __name__ == "__main__":
         table = node.get_table_by_id(args.table[0])
 
         # Creates a generic flow object
-        flow = GenericFlow(id = 1, name = "teste", table = table)
+        flow = GenericFlow(name = "teste", table = table)
 
         # Insert the flow
         table.put_flow_from_template(filename = args.input[0],

@@ -1,3 +1,5 @@
+import uuid
+
 class GenericFlow(object):
     """
     This class represents a generic Flow (not related to ODL).
@@ -5,8 +7,8 @@ class GenericFlow(object):
     So first you should create object of this class and after that send to ODL.
     """
 
-    def __init__(self, id, name, table):
-        self.id = id
+    def __init__(self, name, table):
+        self.id = "%s" % uuid.uuid1()
         self.name = name
         self.table = table
         self.hard_timeout = 0
