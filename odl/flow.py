@@ -25,8 +25,8 @@ class ODLFlow(object):
     """
     This class represents a switch table in OpenDayLight.
     """
-    def __init__(self, flow, table):
-        self.flow = flow
+    def __init__(self, xml, table):
+        self.xml = xml
         self.table = table
 
     def __repr__(self):
@@ -34,23 +34,23 @@ class ODLFlow(object):
 
     @property
     def id(self):
-        return self.flow['id']
+        return self.xml['id']
 
     @property
     def priority(self):
-        return self.flow['priority']
+        return self.xml['priority']
 
     @property
     def idle_timeout(self):
-        return self.flow['idle-timeout']
+        return self.xml['idle-timeout']
 
     @property
     def hard_timeout(self):
-        return self.flow['hard-timeout']
+        return self.xml['hard-timeout']
 
     @property
     def cookie(self):
-        return self.flow['cookie']
+        return self.xml['cookie']
 
     def _get_flow_stats(self):
         """
@@ -58,7 +58,7 @@ class ODLFlow(object):
         dict.
         """
         try:
-            return self.flow['opendaylight-flow-statistics:flow-statistics']
+            return self.xml['opendaylight-flow-statistics:flow-statistics']
         except KeyError:
             return {}
 
