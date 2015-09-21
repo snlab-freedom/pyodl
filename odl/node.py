@@ -27,8 +27,8 @@ class ODLNode(object):
     """
     This class represents a node (or a switch) in OpenDayLight.
     """
-    def __init__(self, node, odl_instance):
-        self.node = node
+    def __init__(self, xml, odl_instance):
+        self.xml = xml
         self.odl_instance = odl_instance
 
     def __repr__(self):
@@ -36,37 +36,37 @@ class ODLNode(object):
 
     @property
     def id(self):
-        return self.node['id']
+        return self.xml['id']
 
     @property
     def description(self):
-        return self.node['flow-node-inventory:description']
+        return self.xml['flow-node-inventory:description']
 
     @property
     def ip_address(self):
-        return self.node['flow-node-inventory:ip-address']
+        return self.xml['flow-node-inventory:ip-address']
 
     @property
     def manufacturer(self):
-        return self.node['flow-node-inventory:manufacturer']
+        return self.xml['flow-node-inventory:manufacturer']
 
     @property
     def serial_number(self):
-        return self.node['flow-node-inventory:serial-number']
+        return self.xml['flow-node-inventory:serial-number']
 
     @property
     def hardware(self):
-        return self.node['flow-node-inventory:hardware']
+        return self.xml['flow-node-inventory:hardware']
 
     @property
     def software(self):
-        return self.node['flow-node-inventory:software']
+        return self.xml['flow-node-inventory:software']
 
     def get_tables(self):
         """
         Return a dict with all tables of this node.
         """
-        tables = self.node['flow-node-inventory:table']
+        tables = self.xml['flow-node-inventory:table']
         result = {}
         for table in tables:
             obj = ODLTable(table, self)
@@ -87,7 +87,7 @@ class ODLNode(object):
         """
         Return a dict with all connectors of this node.
         """
-        connectors = self.node['node-connector']
+        connectors = self.xml['node-connector']
         result = {}
         for connector in connectors:
             obj = ODLConnector(connector, self)
