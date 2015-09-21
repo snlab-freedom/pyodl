@@ -22,6 +22,8 @@
 from odl.flow import ODLFlow
 from odl.exceptions import ODL404, FlowNotFound
 
+from jinja2 import Template
+
 import json
 
 class ODLTable(object):
@@ -116,6 +118,17 @@ class ODLTable(object):
         return odl_instance.put(endpoint,
                                 data=data,
                                 content="application/xml")
+
+    def put_flow_from_template(self, filename, flow):
+        """
+        This methods reads a XML jinja2 template and parse-it before sending to
+        ODL.
+        """
+        with open(filename, 'r') as f:
+            template = Template(f.read())
+            parsed = template.render(flow = flow)
+            return self.put_flow_from_data(data = parsed,
+                                           flow_id = str(flow.id))
 
     def delete_flows(self):
         """
