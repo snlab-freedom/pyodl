@@ -34,8 +34,8 @@ class ODLTable(object):
     """
     This class represents a switch table in OpenDayLight.
     """
-    def __init__(self, table, node):
-        self.table = table
+    def __init__(self, xml, node):
+        self.xml = xml
         self.config_table = {}
         self.node = node
 
@@ -55,7 +55,7 @@ class ODLTable(object):
 
     @property
     def id(self):
-        return self.table['id']
+        return self.xml['id']
 
     def _get_aggregate_stats(self):
         """
@@ -64,7 +64,7 @@ class ODLTable(object):
         """
         try:
             key = 'opendaylight-flow-statistics:aggregate-flow-statistics'
-            return self.table[key]
+            return self.xml[key]
         except KeyError:
             return {}
 
@@ -74,7 +74,7 @@ class ODLTable(object):
         """
         odl_instance = self.node.odl_instance
         result = odl_instance.get(self.endpoint)
-        self.table = result['flow-node-inventory:table'][0]
+        self.xml = result['flow-node-inventory:table'][0]
 
         try:
             result = odl_instance.get(self.config_endpoint)
@@ -88,7 +88,7 @@ class ODLTable(object):
         Return a dict with all flows in operational endpoint (in this table).
         """
         try:
-            flows = self.table['flow']
+            flows = self.xml['flow']
         except KeyError:
             flows = []
 
