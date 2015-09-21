@@ -109,12 +109,12 @@ class ODLTable(object):
         except KeyError:
             raise FlowNotFound("Flow id %s not found" % id)
 
-    def put_flow_from_data(self, data, flow_id):
+    def put_flow_from_data(self, data, flow):
         """
         Insert a flow in this table (config endpoint) based on raw xml data.
         """
         odl_instance = self.node.odl_instance
-        endpoint = self.config_endpoint + 'flow/' + flow_id
+        endpoint = self.config_endpoint + 'flow/' + str(flow.id)
         return odl_instance.put(endpoint,
                                 data=data,
                                 content="application/xml")
@@ -128,7 +128,19 @@ class ODLTable(object):
             template = Template(f.read())
             parsed = template.render(flow = flow)
             return self.put_flow_from_data(data = parsed,
-                                           flow_id = str(flow.id))
+                                           flow = flow)
+
+    def output_by_l2(self, connector_id, source = None, destination = None):
+
+        connector = self.node.get_connector_by_id(connector_id)
+
+
+        with open(filename, 'r') as f:
+            template = Template(f.read())
+            parsed = template.render(flow = flow,
+                                     source = source,
+                                     destination = destination,
+                                     connector = connector)
 
     def delete_flows(self):
         """
