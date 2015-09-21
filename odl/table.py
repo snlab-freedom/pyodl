@@ -131,7 +131,6 @@ class ODLTable(object):
         with open(filename, 'r') as f:
             template = Template(f.read())
             parsed = template.render(flow = flow)
-            print parsed
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
@@ -158,6 +157,31 @@ class ODLTable(object):
 
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
+
+    def l3output(self, connector_id, source, destination):
+        """
+        This methods insert a flow using source address and destination address
+        as match fields (both in ipv4).
+
+        connector_id must be a valid ID of the node of this table.
+        """
+        template_dir = os.getcwd()
+        tpl = os.path.join(template_dir, TEMPLATES_DIR, 'l3output.tpl')
+
+        connector = self.node.get_connector_by_id(connector_id)
+
+        flow = GenericFlow(name = "l3outputTest", table = self)
+
+        with open(tpl, 'r') as f:
+            template = Template(f.read())
+            parsed = template.render(flow = flow,
+                                     source = source,
+                                     destination = destination,
+                                     connector = connector)
+
+            return self.put_flow_from_data(data = parsed,
+                                           flow = flow)
+
 
     def delete_flows(self):
         """
