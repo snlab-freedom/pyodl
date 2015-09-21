@@ -1,62 +1,62 @@
-import httplib2
-import requests
-import json
-import sys
+#!/usr/bin/env python
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors:
+#          - Artur Baruchi <abaruchi AT ncc DOT unesp DOT br>
+#
+# -*- coding: utf-8 -*-
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
+from odl.topology import ODLTopology
+from odl.instance import ODLInstance
+
 import os
-from requests.exceptions import ConnectionError
+import sys
 
-# Connect to the ODL Controller
-# Return a JSON object
-def odl_connect(url, user, pas):
+if __name__ == "__main__":
     try:
-        r = requests.get(url, auth=(user, pas))
-        decoded = json.loads(r.text)
-        return decoded
-    except ConnectionError as e:
-        print ("Error to Connect at: ", url)
-        print e
-        return -1
+        server = os.environ["ODL_URL"]
+        user = os.environ["ODL_USER"]
+        password = os.environ["ODL_PASS"]
+    except KeyError:
+        print "Please provide all environment vairables."
+        print "Read the README.md for more information."
+        sys.exit(1)
 
-# Receives a JSON ODL object and the Switch
-# Returns the sum of byte count and packet count for each Aggregate Table 
-def sum_flowagg(jobj,switch):
+    credentials = (user, password)
 
-    aggflowbyte=0;
-    aggflowpacket=0;
+    odl = ODLInstance(server, credentials)
 
-    for key in jobj['nodes']['node']:
-        if key['flow-node-inventory:serial-number'] == switch:
-            for keyA in key['flow-node-inventory:table']:
-                for keyB in keyA['opendaylight-flow-statistics:aggregate-flow-statistics']:
-                    if keyB == 'byte-count':
-                        aggflowbyte = aggflowbyte + keyA['opendaylight-flow-statistics:aggregate-flow-statistics'][keyB]
-                    if keyB == 'packet-count':
-                        aggflowpacket = aggflowpacket + keyA['opendaylight-flow-statistics:aggregate-flow-statistics'][keyB]
-        else:
-            next
+    # Get Nodes from the controller. This method returns a Dictionary
+    # Index is the Node ID
+    nodes = odl.get_nodes()
 
-    return (aggflowbyte, aggflowpacket)
-
-# Receives a JSON ODL object and the Switch
-# Returns the Aggregate Value for each switch
+    # For each value in Dictionary 'nodes' 
+    for node in nodes.values():
+        # Return a dictionary with all tables for a given node
+        tables = node.get_tables()
+        for table in tables.values():
+            aggr = table.get_aggregate_byte()
+            print aggr
+            
 
 
 
-## Main
-try:
-    server = os.environ["ODL_URL"]
-    user = os.environ["ODL_USER"]
-    password = os.environ["ODL_PASS"]
-except KeyError:
-    print "Please provide all environment vairables."
-    print "Read the README.md for more information."
-    sys.exit(1)
 
-#credentials = (user, password)
-obj = odl_connect(server, user, password)
-by, cnt = sum_flowagg(obj,"QTFCA61380001")
-print by
-print cnt
-#print 'Switch: QTFCA61380001, Bytes: %d, Packets: %d' % by, cnt
 
-#Metric(obj,"flow-node-inventory:description")
+
+
+
+
