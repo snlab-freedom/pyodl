@@ -21,7 +21,7 @@
 
 from odl.connector import ODLConnector
 from odl.table import ODLTable
-from odl.exceptions import TableNotFound
+from odl.exceptions import TableNotFound, ConnectorNotFound
 
 class ODLNode(object):
     """
@@ -102,7 +102,7 @@ class ODLNode(object):
         try:
             return connectors[id]
         except KeyError:
-            return None
+            raise ConnectorNotFound("Connector %s not found" % id)
 
     def clear_flows(self):
         pass

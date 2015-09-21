@@ -21,10 +21,14 @@
 
 from odl.flow import ODLFlow
 from odl.exceptions import ODL404, FlowNotFound
+from odl.settings import *
+
+from of.flow import GenericFlow
 
 from jinja2 import Template
 
 import json
+import os
 
 class ODLTable(object):
     """
@@ -127,20 +131,33 @@ class ODLTable(object):
         with open(filename, 'r') as f:
             template = Template(f.read())
             parsed = template.render(flow = flow)
+            print parsed
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
-    def output_by_l2(self, connector_id, source = None, destination = None):
+    def l2output(self, connector_id, source, destination):
+        """
+        This methods insert a flow using source MAC address and destination MAC
+        address as match fields.
+
+        connector_id must be a valid ID of the node of this table.
+        """
+        template_dir = os.getcwd()
+        tpl = os.path.join(template_dir, TEMPLATES_DIR, 'l2output.tpl')
 
         connector = self.node.get_connector_by_id(connector_id)
 
+        flow = GenericFlow(name = "l2outputTest", table = self)
 
-        with open(filename, 'r') as f:
+        with open(tpl, 'r') as f:
             template = Template(f.read())
             parsed = template.render(flow = flow,
                                      source = source,
                                      destination = destination,
                                      connector = connector)
+
+            return self.put_flow_from_data(data = parsed,
+                                           flow = flow)
 
     def delete_flows(self):
         """
