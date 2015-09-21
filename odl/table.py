@@ -108,6 +108,16 @@ class ODLTable(object):
         except KeyError:
             return None
 
+    def get_aggregate_packets(self):
+        """
+        Returns the number of aggregate packets for a table
+        """
+        stats = self._get_aggregate_stats()
+        try:
+            return stats['packet-count']
+        except KeyError:
+            return None
+
     def get_config_flows(self):
         """
         Return a dict with all flows in config endpoint (in this table).

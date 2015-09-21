@@ -48,8 +48,11 @@ if __name__ == "__main__":
         # Return a dictionary with all tables for a given node
         tables = node.get_tables()
         for table in tables.values():
+            print "TABLE: ",table
             aggr = table.get_aggregate_byte()
-            print aggr
+            pkt = table.get_aggregate_packets()
+            print "Bytes: ",aggr
+            print "Packets: ",pkt
             
 
 
