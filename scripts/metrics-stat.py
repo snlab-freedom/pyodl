@@ -18,7 +18,7 @@ def odl_connect(url, user, pas):
         return -1
 
 # Receives a JSON ODL object and the Switch
-# Returns the sum of byte count and packet count for each Aggregate Table 
+# Returns Aggregate metrics (bytes and pkt count) for each table
 def sum_flowagg(jobj,switch):
 
     aggflowbyte=0;
@@ -38,7 +38,9 @@ def sum_flowagg(jobj,switch):
     return (aggflowbyte, aggflowpacket)
 
 # Receives a JSON ODL object and the Switch
-# Returns the Aggregate Value for each switch
+# Returns the sum of bytes and pkts count for each flow to compare against Aggregate
+def sum_flowmetric(jobj,switch):
+
 
 
 
