@@ -21,10 +21,14 @@
 
 from odl.flow import ODLFlow
 from odl.exceptions import ODL404, FlowNotFound
+from odl.settings import *
+
+from of.flow import GenericFlow
 
 from jinja2 import Template
 
 import json
+import os
 
 class ODLTable(object):
     """
@@ -128,12 +132,12 @@ class ODLTable(object):
         except KeyError:
             raise FlowNotFound("Flow id %s not found" % id)
 
-    def put_flow_from_data(self, data, flow_id):
+    def put_flow_from_data(self, data, flow):
         """
         Insert a flow in this table (config endpoint) based on raw xml data.
         """
         odl_instance = self.node.odl_instance
-        endpoint = self.config_endpoint + 'flow/' + flow_id
+        endpoint = self.config_endpoint + 'flow/' + str(flow.id)
         return odl_instance.put(endpoint,
                                 data=data,
                                 content="application/xml")
@@ -146,8 +150,33 @@ class ODLTable(object):
         with open(filename, 'r') as f:
             template = Template(f.read())
             parsed = template.render(flow = flow)
+            print parsed
             return self.put_flow_from_data(data = parsed,
-                                           flow_id = str(flow.id))
+                                           flow = flow)
+
+    def l2output(self, connector_id, source, destination):
+        """
+        This methods insert a flow using source MAC address and destination MAC
+        address as match fields.
+
+        connector_id must be a valid ID of the node of this table.
+        """
+        template_dir = os.getcwd()
+        tpl = os.path.join(template_dir, TEMPLATES_DIR, 'l2output.tpl')
+
+        connector = self.node.get_connector_by_id(connector_id)
+
+        flow = GenericFlow(name = "l2outputTest", table = self)
+
+        with open(tpl, 'r') as f:
+            template = Template(f.read())
+            parsed = template.render(flow = flow,
+                                     source = source,
+                                     destination = destination,
+                                     connector = connector)
+
+            return self.put_flow_from_data(data = parsed,
+                                           flow = flow)
 
     def delete_flows(self):
         """

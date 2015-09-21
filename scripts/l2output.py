@@ -45,10 +45,6 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(description='Insert a flow in a table node.')
 
-    parser.add_argument('-i',
-                        '--input',
-                        help='Input XML tempalte flow file',
-                        nargs=1)
     parser.add_argument('-n',
                         '--node',
                         help='Node ID',
@@ -57,13 +53,24 @@ if __name__ == "__main__":
                         '--table',
                         help='Table ID',
                         nargs=1)
+    parser.add_argument('-s',
+                        '--source',
+                        help='Source MAC address',
+                        nargs=1)
+    parser.add_argument('-d',
+                        '--destination',
+                        help='Destination MAC address',
+                        nargs=1)
+    parser.add_argument('-c',
+                        '--connector',
+                        help='Connector ID',
+                        nargs=1)
 
 
     args = parser.parse_args()
 
-    if (args.input is None or
-        args.node is None or
-        args.table is None):
+    if (args.node is None or args.table is None or args.connector is None or
+        (args.source is None and args.destination is None)):
         parser.print_help()
         sys.exit(1)
 
@@ -77,12 +84,16 @@ if __name__ == "__main__":
         # Get the table object
         table = node.get_table_by_id(args.table[0])
 
-        # Creates a generic flow object
-        flow = GenericFlow(name = "teste", table = table)
+        source, destination = None, None
+        if args.source:
+            source = args.source[0]
+        if args.destination:
+            destination = args.destination[0]
 
         # Insert the flow
-        table.put_flow_from_template(filename = args.input[0],
-                                     flow = flow)
+        table.l2output(connector_id = args.connector[0],
+                       source = source,
+                       destination = destination)
 
     except (IOError, NodeNotFound, TableNotFound) as e:
         print e
