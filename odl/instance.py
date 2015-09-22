@@ -38,6 +38,10 @@ class ODLInstance(object):
         self.credentials = credentials
         self.headers = { 'Content-type' : 'application/json' }
 
+    def to_dict(self):
+        base = {'nodes': [ node.to_dict() for node in self.get_nodes().values() ]}
+        return base
+
     def request(self, method, endpoint, auth, data=None, content=None):
         if content:
             headers = {'Content-type': content}

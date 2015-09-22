@@ -62,6 +62,18 @@ class ODLNode(object):
     def software(self):
         return self.xml['flow-node-inventory:software']
 
+    def to_dict(self):
+        tables = self.get_tables().values()
+        base = {self.id: {
+                'description': self.description,
+                'ip_address': self.ip_address,
+                'manufacturer': self.manufacturer,
+                'hardware': self.hardware,
+                'software': self.software,
+                'tables': [ table.to_dict() for table in tables]}}
+
+        return base
+
     def get_tables(self):
         """
         Return a dict with all tables of this node.

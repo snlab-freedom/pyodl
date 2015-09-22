@@ -69,6 +69,14 @@ class ODLTable(object):
         except KeyError:
             return {}
 
+    def to_dict(self):
+        config = self.get_config_flows().values()
+        operational = self.get_operational_flows().values()
+        base = {self.id:
+                {'config_flows': [flow.to_dict() for flow in config],
+                 'operational_flows': [flow.to_dict() for flow in operational]}}
+        return base
+
     def update(self):
         """
         Queries the server and retrieve a updated table.

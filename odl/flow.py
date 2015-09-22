@@ -62,6 +62,15 @@ class ODLFlow(object):
         except KeyError:
             return {}
 
+    def to_dict(self):
+        base = {self.id: {'priority': self.priority,
+                          'idle_timeout': self.idle_timeout,
+                          'hard_timeout': self.hard_timeout,
+                          'cookie': self.cookie,
+                          'stats': {'bytes': self.get_byte_count(),
+                                    'packets': self.get_packet_count()}}}
+        return base
+
     def get_byte_count(self):
         """
         Return the number of bytes that matches with this flow.
