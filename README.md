@@ -23,14 +23,28 @@ Also, you need to export the variables with the server address/port and your
 credentials:
 
 ```
- $ export ODL_URL="http://127.0.0.1:8080"
- $ export ODL_USER="admin"
- $ export ODL_PASS="admin"
+$ export ODL_URL="http://127.0.0.1:8080"
+$ export ODL_USER="admin"
+$ export ODL_PASS="admin"
 ```
 
 ## Examples
 
 For examples, please visit the `scripts` folder.
+
+## Web server
+
+For SC15 demo we need a way to export the topology and nodes information.  For
+this reason there is a `webserver` folder, where is a Flex webserver project.
+
+If you would like to run the webserver, please execute:
+
+```
+$ python webserver/web.py
+```
+
+After that you should be able to point your browser to
+`http://YOUR_SERVER:5000/`.
 
 ## Running queries from curl
 
