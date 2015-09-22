@@ -22,7 +22,7 @@
 
 from odl.flow import ODLFlow
 from odl.exceptions import ODL404, FlowNotFound
-from odl.settings import *
+from settings.dev import *
 
 from of.flow import GenericFlow
 

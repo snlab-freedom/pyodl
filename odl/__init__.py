@@ -10,5 +10,5 @@ except ImportError:
             pass
 
 log = logging.getLogger(__name__)
-logging.config.fileConfig('logging.conf')
+logging.config.fileConfig('settings/logging.conf')
 log.addHandler(NullHandler())
