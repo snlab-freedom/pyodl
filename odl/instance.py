@@ -19,15 +19,18 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
-import json
-import sys
-import requests
-
 from odl.flow import ODLFlow
 from odl.node import ODLNode
 from odl.table import ODLTable
 
 from odl.exceptions import *
+
+from odl import log
+
+import json
+import sys
+import requests
+
 
 class ODLInstance(object):
     def __init__(self, server, credentials):
@@ -73,7 +76,7 @@ class ODLInstance(object):
         if not response.status_code // 100 == 2:
             raise UnexpectedResponse(format(response))
 
-        #print "DEBUG: ODLInstance: %s %s" % (method, endpoint)
+        log.info("ODLInstance: %s %s" % (method, endpoint))
         return response
 
     def get(self, endpoint):

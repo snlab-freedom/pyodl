@@ -80,7 +80,6 @@ class ODLTable(object):
             result = odl_instance.get(self.config_endpoint)
             self.config_table = result['flow-node-inventory:table'][0]
         except ODL404 as e:
-            #print "DEBUG: Config for this table not found"
             pass
 
     def get_operational_flows(self):
