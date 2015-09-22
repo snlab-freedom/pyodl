@@ -15,6 +15,7 @@
 #
 # Authors:
 #          - Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
+#          - Artur Baruchi <abaruchi AT ncc DOT unesp DOT br>
 #
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
