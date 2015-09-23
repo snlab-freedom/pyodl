@@ -1,7 +1,9 @@
-{% extends "base.phtml" %}
+{% extends "base.html" %}
 {% block body %}
     <nav>
         <ul class="list-unstyled main-menu">
+          <span class="pull-right" id="nav-close"><i class="fa fa-times" style="color:white;"></i></span>
+          <br>
           <!--Include your navigation here-->
           <li><a href="#">Menu One <span class="icon"></span></a></li>
           <li><a href="#">Menu Two <span class="icon"></span></a></li>
@@ -29,6 +31,12 @@
       <hr>
     </div> <!-- /container -->
 
+<style>
+.node {
+  border-style: double 2px;
+}
+</style>
+
 <script>
 var nodes = {};
 
@@ -47,8 +55,8 @@ var force = d3.layout.force()
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .linkDistance(60)
-    .charge(-300)
+    .linkDistance(160)
+    .charge(-700)
     .on("tick", tick)
     .start();
 
@@ -70,10 +78,10 @@ var node = svg.selectAll(".node")
     .call(force.drag);
 
 node.append("circle")
-    .attr("r", 8);
+    .attr("r", 20);
 
 node.append("text")
-    .attr("x", 12)
+    .attr("x", 22)
     .attr("dy", ".35em")
     .text(function(d) { return d.name; });
 
@@ -91,20 +99,31 @@ function tick() {
 function mouseover() {
   d3.select(this).select("circle").transition()
       .duration(750)
-      .attr("r", 16);
+      .attr("r", 26);
 
+  $('body').removeClass('nav-expanded');
   $('body').toggleClass('nav-expanded');
 }
 
 function mouseout() {
   d3.select(this).select("circle").transition()
       .duration(750)
-      .attr("r", 8);
+      .attr("r", 20);
 
-  $('body').removeClass('nav-expanded');
+  // $('body').removeClass('nav-expanded');
 
 }
 
 });
+</script>
+
+<script>
+  $(document).ready(function(){
+     //Navigation Menu Slider
+     $('#nav-close').on('click',function(e){
+         e.preventDefault();
+         $('body').removeClass('nav-expanded');
+     });
+  });
 </script>
 {% endblock %}
