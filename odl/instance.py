@@ -47,8 +47,8 @@ class ODLInstance(object):
         links = self.topology.get_links()
         result = []
         for link in links:
-            source = link['source']['source-node']
-            target = link['destination']['dest-node']
+            source = link['source']['source-tp']
+            target = link['destination']['dest-tp']
             result.append({'source': source, 'target': target})
         base['links'] = result
 
