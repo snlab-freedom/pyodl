@@ -38,7 +38,7 @@ a.nav-expander.fixed {
 }
 
 .nav-expanded a.nav-expander.fixed {
-    right: 20em;
+    right: 4em;
 }
 
 nav {
@@ -47,12 +47,11 @@ nav {
   height: 100%;
   overflow: auto;
   position: fixed;
-  right: -20em;
+  right: -40em;
   font-size: 15px;
   top: 0;
-  width: 20em;
+  width: 40em;
   z-index: 2000;
-  
   transition: right 0.3s ease-in-out 0s;
   -webkit-transition: right 0.3s ease-in-out 0s;
   -moz-transition: right 0.3s ease-in-out 0s;
@@ -159,18 +158,10 @@ body.nav-expanded {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.details-values {
+  color: white;
+}
+.details-keys {
+  color: white;
+  font-weight: bold;
+}

@@ -64,13 +64,15 @@ class ODLNode(object):
 
     def to_dict(self):
         tables = self.get_tables().values()
+        conns = self.get_connectors().values()
         base = {self.id: {
                 'description': self.description,
                 'ip_address': self.ip_address,
                 'manufacturer': self.manufacturer,
                 'hardware': self.hardware,
                 'software': self.software,
-                'tables': [ table.to_dict() for table in tables]}}
+                'tables': [ table.to_dict() for table in tables],
+                'connectors': [ conn.to_dict() for conn in conns]}}
 
         return base
 

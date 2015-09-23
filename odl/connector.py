@@ -30,6 +30,15 @@ class ODLConnector(object):
     def __repr__(self):
         return "<ODLConnector: %s>" % self.id
 
+    def to_dict(self):
+        base = {self.id: {
+                'status': self.status,
+                'port_number': self.port_number,
+                'hardware_address': self.hardware_address,
+                'name': self.name}}
+
+        return base
+
     @property
     def id(self):
         return self.connector['id']

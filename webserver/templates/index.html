@@ -1,25 +1,13 @@
 {% extends "base.html" %}
 {% block body %}
     <nav>
-        <ul class="list-unstyled main-menu">
           <span class="pull-right" id="nav-close"><i class="fa fa-times" style="color:white;"></i></span>
           <br>
-          <!--Include your navigation here-->
-          <li><a href="#">Menu One <span class="icon"></span></a></li>
-          <li><a href="#">Menu Two <span class="icon"></span></a></li>
-          <li><a href="#">Menu Three <span class="icon"></span></a></li>
-          <li><a href="#">Dropdown</a>
-            <ul class="list-unstyled">
-                <li class="sub-nav"><a href="#">Sub Menu One <span class="icon"></span></a></li>
-                <li class="sub-nav"><a href="#">Sub Menu Two <span class="icon"></span></a></li>
-                <li class="sub-nav"><a href="#">Sub Menu Three <span class="icon"></span></a></li>
-                <li class="sub-nav"><a href="#">Sub Menu Four <span class="icon"></span></a></li>
-                <li class="sub-nav"><a href="#">Sub Menu Five <span class="icon"></span></a></li>
-            </ul>
-          </li>
-          <li><a href="#">Menu Four <span class="icon"></span></a></li>
-          <li><a href="#">Menu Five <span class="icon"></span></a></li>
-        </ul>
+
+          <h3  id="node-name"></h3>
+          <h3  id="node-description"></h3>
+          <hr>
+          <span id="node-details"></span>
       </nav>
 
     <div class="container">
@@ -35,12 +23,81 @@
 .node {
   border-style: double 2px;
 }
+
+nav h3 {
+  font-size: 18px;
+  color: white;
+  text-align: center;
+}
 </style>
 
 <script>
+function get_type(id) {
+  first = id.split(":")[0];
+  third = id.split(":")[2];
+  if (first == "openflow" && third == undefined) {
+    return "switch";
+  } else {
+    return "port";
+  }
+}
+
+function get_force_type(object) {
+  source = object['source']['name'];
+  target = object['target']['name'];
+
+  s_type = get_type(source);
+  t_type = get_type(target);
+
+  if (s_type == "port" || t_type == "port") {
+    return "port";
+  } else {
+    return "switch";
+  }
+}
+
+function get_node_details(id, json) {
+  var found = 0;
+  json.forEach(function(json) {
+    key = Object.keys(json)[0];
+    if (key == id) { found = json }
+  });
+  return found;
+}
+
+function clear_pannel_info() {
+  $("#node-details").html('');
+}
+
+function update_pannel_info(id, details) {
+  clear_pannel_info();
+  node = details[id];
+  $("#node-name").html(id);
+  $("#node-description").html(node['description']);
+
+  // Prepare and compile template
+  var source = $("#switch-details-template").html();
+  var template = Handlebars.compile($.trim(source));
+
+
+  var context = {hardware: node['hardware'],
+                 software: node['software'],
+                 address: node['ip_address'],
+                 manufacturer: node['manufacturer'],
+                 connectors: node['connectors'].length,
+                 tables: node['tables'].length};
+
+  var html = template(context);
+
+  $("#node-details").html(html);
+}
+
 var nodes = {};
 
-d3.json("{{ url_for('static', filename='data/full.json') }}", function(links) {
+d3.json("{{ url_for('static', filename='data/full.json') }}", function(data) {
+  var json = data;
+
+  links = json['links']
   // Compute the distinct nodes from the links.
   links.forEach(function(link) {
     link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
@@ -48,14 +105,15 @@ d3.json("{{ url_for('static', filename='data/full.json') }}", function(links) {
   });
 
 
+
 var width = $("#graph").parent().width(),
-    height = 500;
+    height = 700;
 
 var force = d3.layout.force()
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .linkDistance(160)
+    .linkDistance(function(d) { if (get_force_type(d) == "switch") { return 160; } else { return 10; }})
     .charge(-700)
     .on("tick", tick)
     .start();
@@ -78,12 +136,12 @@ var node = svg.selectAll(".node")
     .call(force.drag);
 
 node.append("circle")
-    .attr("r", 20);
+    .attr("r", function(d) { if (get_type(d['name']) == "switch") { return 20; } else { return 10; }});
 
 node.append("text")
     .attr("x", 22)
     .attr("dy", ".35em")
-    .text(function(d) { return d.name; });
+    .text(function(d) { if (get_type(d.name) == "switch") return d.name; });
 
 function tick() {
   link
@@ -97,18 +155,28 @@ function tick() {
 }
 
 function mouseover() {
+
+  id = d3.select(this)[0][0].__data__.name;
+/*
   d3.select(this).select("circle").transition()
       .duration(750)
       .attr("r", 26);
+*/
+
+  details = get_node_details(id, json['nodes']);
+  update_pannel_info(id, details);
+
 
   $('body').removeClass('nav-expanded');
   $('body').toggleClass('nav-expanded');
 }
 
 function mouseout() {
+/*
   d3.select(this).select("circle").transition()
       .duration(750)
       .attr("r", 20);
+*/
 
   // $('body').removeClass('nav-expanded');
 
@@ -126,4 +194,64 @@ function mouseout() {
      });
   });
 </script>
+
+<!-- Handlebars templates -->
+{% raw %}
+<script id="switch-details-template" type="text/x-handlebars-template">
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Hardware:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{ hardware }}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Software:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{ software }}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Address:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{address}}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Manufacturer:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{manufacturer}}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">OF Connectors:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{connectors}}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">OF Tables:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{tables}}</span>
+          </div>
+        </div>
+</script>
+{% endraw %}
+
 {% endblock %}

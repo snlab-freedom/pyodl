@@ -22,6 +22,7 @@
 from odl.flow import ODLFlow
 from odl.node import ODLNode
 from odl.table import ODLTable
+from odl.topology import ODLTopology
 
 from odl.exceptions import *
 
@@ -37,9 +38,29 @@ class ODLInstance(object):
         self.server = server
         self.credentials = credentials
         self.headers = { 'Content-type' : 'application/json' }
+        self.topology = ODLTopology(self.server, self.credentials, self)
 
     def to_dict(self):
         base = {'nodes': [ node.to_dict() for node in self.get_nodes().values() ]}
+
+        # These links are from ODL topology plugin
+        links = self.topology.get_links()
+        result = []
+        for link in links:
+            source = link['source']['source-node']
+            target = link['destination']['dest-node']
+            result.append({'source': source, 'target': target})
+        base['links'] = result
+
+        # Now, creat our port-switch links
+        for node in base['nodes']:
+            id = node.keys()[0]
+            connectors = node[id]['connectors']
+            for connector in connectors:
+                connector_id = connector.keys()[0]
+                port = connector[connector_id]['port_number']
+                base['links'].append({'source': id, 'target': connector_id})
+
         return base
 
     def request(self, method, endpoint, auth, data=None, content=None):
