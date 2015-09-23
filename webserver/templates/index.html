@@ -12,9 +12,14 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8">
           <div id="graph"></div>
         </div>
+
+        <div class="col-md-4">
+          <p>Some periferical data here</p>
+        </div>
+
       </div>
       <hr>
     </div> <!-- /container -->
@@ -79,13 +84,24 @@ function update_pannel_info(id, details) {
   var source = $("#switch-details-template").html();
   var template = Handlebars.compile($.trim(source));
 
+  // Prepare connectors
+ connectors = [];
+  node['connectors'].forEach(function(connector) {
+    key = Object.keys(connector)[0];
+    details = connector[key];
+    details['id'] = key;
+    connectors.push(details);
+  });
+
+  console.log(connectors);
 
   var context = {hardware: node['hardware'],
                  software: node['software'],
                  address: node['ip_address'],
                  manufacturer: node['manufacturer'],
-                 connectors: node['connectors'].length,
-                 tables: node['tables'].length};
+                 connectors_len: node['connectors'].length,
+                 tables_len: node['tables'].length,
+                 connectors: connectors};
 
   var html = template(context);
 
@@ -239,7 +255,7 @@ function mouseout() {
             <span class="details-keys">OF Connectors:</span>
           </div>
           <div class="col-md-6">
-            <span class="details-values">{{connectors}}</span>
+            <span class="details-values">{{connectors_len}}</span>
           </div>
         </div>
 
@@ -248,9 +264,39 @@ function mouseout() {
             <span class="details-keys">OF Tables:</span>
           </div>
           <div class="col-md-6">
-            <span class="details-values">{{tables}}</span>
+            <span class="details-values">{{tables_len}}</span>
           </div>
         </div>
+
+<h3>Connectors</h3>
+
+  <div class="row row-fluid">
+  <div class="col-md-12 connectors">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>port</th>
+        <th>hardware_address</th>
+        <th>status</th>
+      </tr>
+    </thead>
+    <tbody>
+  {{#each connectors}}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{name}}</td>
+        <td>{{port_number}}</td>
+        <td>{{hardware_address}}</td>
+        <td>{{status}}</td>
+      </tr>
+  {{/each}}
+    </tbody>
+  </table>
+  </div>
+  </div>
+
 </script>
 {% endraw %}
 

@@ -165,3 +165,7 @@ body.nav-expanded {
   color: white;
   font-weight: bold;
 }
+.connectors {
+    background-color: rgb(102, 102, 102);
+    color: white;
+}
