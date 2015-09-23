@@ -4,7 +4,7 @@
           <span class="pull-right" id="nav-close"><i class="fa fa-times" style="color:white;"></i></span>
           <br>
 
-          <h3  id="node-name"></h3>
+          <h2  id="node-name"></h2>
           <h3  id="node-description"></h3>
           <hr>
           <span id="node-details"></span>
@@ -25,8 +25,19 @@
     </div> <!-- /container -->
 
 <style>
-.node {
+.switch {
   border-style: double 2px;
+}
+
+.port {
+  border-style: double 2px;
+}
+
+
+nav h2 {
+  font-size: 28px;
+  color: white;
+  text-align: center;
 }
 
 nav h3 {
@@ -72,36 +83,46 @@ function get_node_details(id, json) {
 
 function clear_pannel_info() {
   $("#node-details").html('');
+  $("#node-description").html('');
 }
 
 function update_pannel_info(id, details) {
   clear_pannel_info();
   node = details[id];
   $("#node-name").html(id);
-  $("#node-description").html(node['description']);
 
-  // Prepare and compile template
-  var source = $("#switch-details-template").html();
+  type = get_type(id);
+
+  if (type == "switch") {
+    $("#node-description").html(node['description']);
+    var source = $("#switch-details-template").html();
+
+    // Prepare connectors
+    connectors = [];
+    node['connectors'].forEach(function(connector) {
+      key = Object.keys(connector)[0];
+      details = connector[key];
+      details['id'] = key;
+      connectors.push(details);
+    });
+
+    var context = {hardware: node['hardware'],
+                   software: node['software'],
+                   address: node['ip_address'],
+                   manufacturer: node['manufacturer'],
+                   connectors_len: node['connectors'].length,
+                   tables_len: node['tables'].length,
+                   connectors: connectors};
+  } else {
+    var source = $("#port-details-template").html();
+
+    var context = {name: node['name'],
+                   hardware_address: node['hardware_address'],
+                   port_number: node['port_number'],
+                   status: node['status']}
+  }
+
   var template = Handlebars.compile($.trim(source));
-
-  // Prepare connectors
- connectors = [];
-  node['connectors'].forEach(function(connector) {
-    key = Object.keys(connector)[0];
-    details = connector[key];
-    details['id'] = key;
-    connectors.push(details);
-  });
-
-  console.log(connectors);
-
-  var context = {hardware: node['hardware'],
-                 software: node['software'],
-                 address: node['ip_address'],
-                 manufacturer: node['manufacturer'],
-                 connectors_len: node['connectors'].length,
-                 tables_len: node['tables'].length,
-                 connectors: connectors};
 
   var html = template(context);
 
@@ -129,7 +150,7 @@ var force = d3.layout.force()
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .linkDistance(function(d) { if (get_force_type(d) == "switch") { return 160; } else { return 10; }})
+    .linkDistance(function(d) { if (get_force_type(d) == "switch") { return 160; } else { return 0; }})
     .charge(-700)
     .on("tick", tick)
     .start();
@@ -298,6 +319,46 @@ function mouseout() {
   </div>
 
 </script>
+
+<script id="port-details-template" type="text/x-handlebars-template">
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Name:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{ name }}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">MAC Address:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{hardware_address}}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Port Number:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{port_number}}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 text-right">
+            <span class="details-keys">Status:</span>
+          </div>
+          <div class="col-md-6">
+            <span class="details-values">{{status}}</span>
+          </div>
+        </div>
+
+</script>
+
 {% endraw %}
 
 {% endblock %}

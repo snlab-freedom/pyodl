@@ -52,14 +52,19 @@ class ODLInstance(object):
             result.append({'source': source, 'target': target})
         base['links'] = result
 
+        connector_nodes = []
         # Now, creat our port-switch links
         for node in base['nodes']:
             id = node.keys()[0]
             connectors = node[id]['connectors']
             for connector in connectors:
                 connector_id = connector.keys()[0]
+                connector_nodes.append({connector_id: connector[connector_id]})
                 port = connector[connector_id]['port_number']
                 base['links'].append({'source': id, 'target': connector_id})
+
+        # Extends nodes to include the connector_nodes
+        base['nodes'].extend(connector_nodes)
 
         return base
 
