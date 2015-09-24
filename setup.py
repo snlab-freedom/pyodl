@@ -16,7 +16,7 @@ setup(
     version='0.0.1',
     author='Beraldo Leal',
     author_email='beraldo@ncc.unesp.br',
-    packages=find_packages(exclude=['test', 'bin', 'scripts']),
+    packages=find_packages(exclude=['test', 'bin', 'scripts', 'settings', 'flows']),
     url='http://github.com/beraldoleal/python-odl/',
     license='LICENSE.md',
     description='Python 2.x library for OpenDayLight interations via REST API.',
