@@ -61,30 +61,68 @@ class ODLInstance(object):
         Instance. This is useful and is a preparation to export data to JSON
         format.
         """
+        # TODO: Split this method into small methods
+
+        # All switches nodes in dict format
         base = {'nodes': [ node.to_dict() for node in self.get_nodes().values() ]}
 
-        # These links are from ODL topology plugin
-        links = self.topology.get_links()
-        result = []
-        for link in links:
+        # These nodes and links are from ODL topology plugin.
+        topology_nodes = self.topology.get_nodes()
+        topology_links = self.topology.get_links()
+
+        # if a node is not in base['nodes'], then append.
+        for node in topology_nodes.values():
+            node_id = node['node-id']
+            if ((node_id.split(":")[0] == "host") and
+                (node not in base['nodes'])):
+                base['nodes'].append({node_id: node})
+
+        # create links (base['links'] = [] with source and target
+        base['links'] = []
+
+        for node in topology_nodes.values():
+            node_id = node['node-id']
+            node_type = node_id.split(":")[0]
+            if (node_type == "openflow"):
+                # Get the termination points. Here we have Switch to port links
+                for tp in node['termination-point']:
+                    tp_id = tp['tp-id']
+                    node_object = self.get_node_by_id(node_id)
+                    connector = node_object.get_connector_by_id(tp_id)
+                    base['nodes'].append(connector.to_dict())
+                    base['links'].append({'source': node_id,
+                                          'target': tp_id})
+
+            elif (node_type == "host"):
+                # Get the attachment points. Here we have Host to port links
+                for ap in node['host-tracker-service:attachment-points']:
+                    tp_id = ap['tp-id']
+                    base['links'].append({'source': node_id,
+                                          'target': tp_id})
+
+
+        # Create the port 2 port links
+        for link in topology_links.values():
             source = link['source']['source-tp']
             target = link['destination']['dest-tp']
-            result.append({'source': source, 'target': target})
-        base['links'] = result
-
-        connector_nodes = []
-        # Now, creat our port-switch links
-        for node in base['nodes']:
-            id = node.keys()[0]
-            connectors = node[id]['connectors']
-            for connector in connectors:
-                connector_id = connector.keys()[0]
-                connector_nodes.append({connector_id: connector[connector_id]})
-                port = connector[connector_id]['port_number']
-                base['links'].append({'source': id, 'target': connector_id})
-
-        # Extends nodes to include the connector_nodes
-        base['nodes'].extend(connector_nodes)
+            s_type = source.split(":")[0]
+            t_type = target.split(":")[0]
+            if ((s_type == "openflow") and (t_type == "openflow")):
+                # This is a link between two ports (switch - switch)
+                base['links'].append({'source': source,
+                                      'target': target})
+        ## Now, creat our port-switch links
+        #for node in base['nodes']:
+        #    id = node.keys()[0]
+        #    connectors = node[id]['connectors']
+        #    for connector in connectors:
+        #        connector_id = connector.keys()[0]
+        #        connector_nodes.append({connector_id: connector[connector_id]})
+        #        port = connector[connector_id]['port_number']
+        #        base['links'].append({'source': id, 'target': connector_id})
+        #
+        ## Extends nodes to include the connector_nodes
+        #base['nodes'].extend(connector_nodes)
 
         return base
 

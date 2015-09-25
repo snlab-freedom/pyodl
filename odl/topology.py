@@ -38,11 +38,19 @@ class ODLTopology(object):
 
     def get_nodes(self):
         topology = self.get_topology()
-        return topology['node']
+        nodes = topology['node']
+        result = {}
+        for node in nodes:
+            result[node['node-id']] = node
+
+        return result
 
     def get_links(self):
         topology = self.get_topology()
-        try:
-            return topology['link']
-        except KeyError:
-            return []
+        links = topology['link']
+
+        result = {}
+        for link in links:
+            result[link['link-id']] = link
+
+        return result
