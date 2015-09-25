@@ -1,5 +1,12 @@
-#!/usr/bin/env python
-#
+"""
+This is the ODLInstance module. This has the classes to handle a OpenDayLight
+instance. When we talk "instance", we are referring to ODL daemon that is
+running on your infrastructure.
+
+This code was tested with ODL Lithium release and uses the REST API provided by
+restconf endpoints.
+"""
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -34,6 +41,14 @@ import requests
 
 
 class ODLInstance(object):
+    """
+    This is the first class that you should instanciate in your code. This
+    represents the ODL Instance, and any request it will be done on this class.
+
+    You need to specify the server that you are trying to connect and your
+    credentials.
+
+    """
     def __init__(self, server, credentials):
         self.server = server
         self.credentials = credentials
@@ -41,6 +56,11 @@ class ODLInstance(object):
         self.topology = ODLTopology(self.server, self.credentials, self)
 
     def to_dict(self):
+        """
+        This method return a dictionary with important attributes of a ODL
+        Instance. This is useful and is a preparation to export data to JSON
+        format.
+        """
         base = {'nodes': [ node.to_dict() for node in self.get_nodes().values() ]}
 
         # These links are from ODL topology plugin
