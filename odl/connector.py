@@ -35,6 +35,7 @@ class ODLConnector(object):
                 'status': self.status,
                 'port_number': self.port_number,
                 'hardware_address': self.hardware_address,
+                'configuration': self.configuration,
                 'name': self.name}}
 
         return base
@@ -61,3 +62,7 @@ class ODLConnector(object):
     @property
     def name(self):
         return self.connector['flow-node-inventory:name']
+
+    @property
+    def configuration(self):
+        return self.connector['flow-node-inventory:configuration']
