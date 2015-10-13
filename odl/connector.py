@@ -31,10 +31,6 @@ class ODLConnector(object):
         return "<ODLConnector: %s>" % self.id
 
     def to_dict(self):
-        """
-        Return a dict with the connectors statics when exists, if not return a empty
-        dict.
-        """
         base = {self.id: {
                 'status': self.status,
                 'port_number': self.port_number,
