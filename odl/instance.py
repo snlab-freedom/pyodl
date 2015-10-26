@@ -33,7 +33,7 @@ from odl.topology import ODLTopology
 
 from odl.exceptions import *
 
-from odl import log
+#from odl import log
 
 import json
 import sys
@@ -168,7 +168,7 @@ class ODLInstance(object):
         if not response.status_code // 100 == 2:
             raise UnexpectedResponse(format(response))
 
-        log.info("ODLInstance: %s %s" % (method, endpoint))
+        #log.info("ODLInstance: %s %s" % (method, endpoint))
         return response
 
     def get(self, endpoint):
