@@ -42,15 +42,24 @@ class ODLFlow(object):
 
     @property
     def idle_timeout(self):
-        return self.xml['idle-timeout']
+        try:
+            return self.xml['idle-timeout']
+	except KeyError:
+	    return {}
 
     @property
     def hard_timeout(self):
-        return self.xml['hard-timeout']
+	try:
+            return self.xml['hard-timeout']
+	except KeyError:
+	    return {}
 
     @property
     def cookie(self):
-        return self.xml['cookie']
+	try:
+            return self.xml['cookie']
+        except KeyError:
+	    return {}
 
     def _get_flow_stats(self):
         """
