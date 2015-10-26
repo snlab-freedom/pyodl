@@ -127,6 +127,10 @@ class ODLInstance(object):
         return base
 
     def request(self, method, endpoint, auth, data=None, content=None):
+        """
+        Tries to connect to the endpoint using a given method
+        PUT, GET or DELETE. Return the response code.
+        """
         if content:
             headers = {'Content-type': content}
         else:

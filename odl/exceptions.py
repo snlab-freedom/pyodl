@@ -20,6 +20,9 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 class ODL404(Exception):
+    """
+    Handle HTML 404 Error - URL does not exist
+    """
     def __init__(self, value):
         self.value = value
 
