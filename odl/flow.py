@@ -44,22 +44,22 @@ class ODLFlow(object):
     def idle_timeout(self):
         try:
             return self.xml['idle-timeout']
-	except KeyError:
-	    return {}
+        except KeyError:
+            return {}
 
     @property
     def hard_timeout(self):
-	try:
+        try:
             return self.xml['hard-timeout']
-	except KeyError:
-	    return {}
+        except KeyError:
+            return {}
 
     @property
     def cookie(self):
-	try:
+        try:
             return self.xml['cookie']
         except KeyError:
-	    return {}
+            return {}
 
     def _get_flow_stats(self):
         """
@@ -80,6 +80,16 @@ class ODLFlow(object):
                                     'packets': self.get_packet_count()}}}
         return base
 
+    def get_long_id(self):
+        """
+        Return a long ID number.
+        """
+        return "%s-%s-%s-%s-%s-%s" % (self.table.node.id,
+                                      self.table.id,
+                                      self.id,
+                                      self.priority,
+                                      self.idle_timeout,
+                                      self.hard_timeout)
     def get_byte_count(self):
         """
         Return the number of bytes that matches with this flow.
