@@ -21,6 +21,8 @@
 
 from odl.exceptions import ODL404, FlowNotFound
 
+import re
+
 class ODLFlow(object):
     """
     This class represents a switch table in OpenDayLight.
@@ -76,6 +78,7 @@ class ODLFlow(object):
                           'idle_timeout': self.idle_timeout,
                           'hard_timeout': self.hard_timeout,
                           'cookie': self.cookie,
+                          'clean_id': self.get_clean_id(),
                           'stats': {'bytes': self.get_byte_count(),
                                     'packets': self.get_packet_count()}}}
         return base
@@ -90,6 +93,10 @@ class ODLFlow(object):
                                       self.priority,
                                       self.idle_timeout,
                                       self.hard_timeout)
+
+    def get_clean_id(self):
+        return str(re.sub(r'#|\$|-|\*','', self.id))
+
     def get_byte_count(self):
         """
         Return the number of bytes that matches with this flow.
