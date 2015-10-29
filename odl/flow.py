@@ -78,6 +78,8 @@ class ODLFlow(object):
                           'idle_timeout': self.idle_timeout,
                           'hard_timeout': self.hard_timeout,
                           'cookie': self.cookie,
+                          'node_id': self.table.node.id,
+                          'table_id': self.table.id,
                           'clean_id': self.get_clean_id(),
                           'stats': {'bytes': self.get_byte_count(),
                                     'packets': self.get_packet_count()}}}
