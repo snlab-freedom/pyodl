@@ -73,6 +73,60 @@ class ODLFlow(object):
         except KeyError:
             return {}
 
+    def _get_match(self):
+        """
+        Return the match fields of this flow.
+        """
+        try:
+            return self.xml['match']
+        except KeyError:
+            return {}
+
+    def _get_ethernet_match(self):
+        """
+        Return the ethernet match of this flow.
+        """
+        match = self._get_match()
+        try:
+            return match['ethernet-match']
+        except KeyError:
+            return {}
+
+    def get_ethernet_type(self):
+        ethernet_match = self._get_ethernet_match()
+        try:
+            return ethernet_match['ethernet-type']['type']
+        except KeyError:
+            return "*"
+
+    def get_ethernet_source(self):
+        ethernet_match = self._get_ethernet_match()
+        try:
+            return ethernet_match['ethernet-source']['address']
+        except KeyError:
+            return "*"
+
+    def get_ethernet_destination(self):
+        ethernet_match = self._get_ethernet_match()
+        try:
+            return ethernet_match['ethernet-destination']['address']
+        except KeyError:
+            return "*"
+
+    def get_ipv4_source(self):
+        match = self._get_match()
+        try:
+            return match['ipv4-source']
+        except KeyError:
+            return "*"
+
+    def get_ipv4_destination(self):
+        match = self._get_match()
+        try:
+            return match['ipv4-destination']
+        except KeyError:
+            return "*"
+
     def to_dict(self):
         base = {self.id: {'priority': self.priority,
                           'idle_timeout': self.idle_timeout,
@@ -81,6 +135,11 @@ class ODLFlow(object):
                           'node_id': self.table.node.id,
                           'table_id': self.table.id,
                           'clean_id': self.get_clean_id(),
+                          'ethernet_match': {'type': self.get_ethernet_type(),
+                                             'source': self.get_ethernet_source(),
+                                             'destination': self.get_ethernet_destination()},
+                          'ipv4_source': self.get_ipv4_source(),
+                          'ipv4_destination': self.get_ipv4_destination(),
                           'stats': {'bytes': self.get_byte_count(),
                                     'packets': self.get_packet_count()}}}
         return base
