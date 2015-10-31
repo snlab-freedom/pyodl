@@ -55,6 +55,8 @@ class ODLInstance(object):
         self.headers = { 'Content-type' : 'application/json' }
         self.topology = ODLTopology(self.server, self.credentials, self)
 
+        self.update_xml()
+
     def to_dict(self):
         """
         This method return a dictionary with important attributes of a ODL
@@ -198,13 +200,15 @@ class ODLInstance(object):
                                 endpoint = self.server + endpoint,
                                 auth = self.credentials)
 
-    def get_inventory_nodes(self):
+    def update_xml(self):
         endpoint = "/restconf/operational/opendaylight-inventory:nodes/"
-        return self.get(endpoint)
+        # Default xml is operational
+        self.xml = self.get(endpoint)
+        config_endpoint = "/restconf/config/opendaylight-inventory:nodes/"
+        self.config_xml = self.get(config_endpoint)
 
     def get_nodes(self):
-        inventory = self.get_inventory_nodes()
-        nodes = inventory['nodes']['node']
+        nodes = self.xml['nodes']['node']
         result = {}
         for node in nodes:
             obj = ODLNode(node, self)

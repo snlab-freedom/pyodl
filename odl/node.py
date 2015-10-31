@@ -76,6 +76,13 @@ class ODLNode(object):
 
         return base
 
+    def get_config_xml(self):
+        config_nodes = self.odl_instance.config_xml['nodes']['node']
+        for node in config_nodes:
+            if node['id'] == self.id:
+                return node
+        return {}
+
     def get_tables(self):
         """
         Return a dict with all tables of this node.

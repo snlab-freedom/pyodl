@@ -46,7 +46,7 @@ class ODLTable(object):
                                                      "config")
 
         # Update table json
-        self.update()
+        #self.update()
 
     def __repr__(self):
         return "<ODLTable: %s>" % self.id
@@ -63,6 +63,16 @@ class ODLTable(object):
         try:
             key = 'opendaylight-flow-statistics:aggregate-flow-statistics'
             return self.xml[key]
+        except KeyError:
+            return {}
+
+    def get_config_xml(self):
+        try:
+            config_tables = self.node.get_config_xml()['flow-node-inventory:table']
+            for table in config_tables:
+                if table['id'] == self.id:
+                    return table
+            return {}
         except KeyError:
             return {}
 
@@ -128,7 +138,7 @@ class ODLTable(object):
         Return a dict with all flows in config endpoint (in this table).
         """
         try:
-            flows = self.config_table['flow']
+            flows = self.get_config_xml()['flow']
         except KeyError:
             flows = []
 
