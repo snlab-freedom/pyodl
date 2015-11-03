@@ -158,6 +158,16 @@ class ODLFlow(object):
     def get_clean_id(self):
         return str(re.sub(r'#|\$|-|\*','', self.id))
 
+    def get_stats_seconds(self):
+        """
+        Return the number of seconds in flow stats.
+        """
+        stats = self._get_flow_stats()
+        try:
+            return stats['duration']['second']
+        except KeyError:
+            return 0
+
     def get_byte_count(self):
         """
         Return the number of bytes that matches with this flow.
