@@ -22,6 +22,8 @@
 import json
 import sys
 
+import networkx as nx
+
 class ODLTopology(object):
     def __init__(self, server, credentials, odl_instance):
         self.server = server
@@ -54,3 +56,15 @@ class ODLTopology(object):
             result[link['link-id']] = link
 
         return result
+
+    def get_networkx_graph(self):
+        graph = nx.Graph()
+
+        data = self.odl_instance.to_dict()
+
+        # When adding an edge to the graph the node it will be added
+        # automatically.
+        for link in data['links']:
+            graph.add_edge(link['source'], link['target'])
+
+        return graph
