@@ -205,7 +205,10 @@ class ODLInstance(object):
         # Default xml is operational
         self.xml = self.get(endpoint)
         config_endpoint = "/restconf/config/opendaylight-inventory:nodes/"
-        self.config_xml = self.get(config_endpoint)
+        try:
+            self.config_xml = self.get(config_endpoint)
+        except ODL404:
+            self.config_xml = {}
 
     def get_nodes(self):
         nodes = self.xml['nodes']['node']
