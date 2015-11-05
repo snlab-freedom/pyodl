@@ -50,6 +50,13 @@ class ODLFlow(object):
             return {}
 
     @property
+    def name(self):
+        try:
+            return self.xml['flow-name']
+        except KeyError:
+            return ""
+
+    @property
     def hard_timeout(self):
         try:
             return self.xml['hard-timeout']
@@ -132,6 +139,7 @@ class ODLFlow(object):
                           'idle_timeout': self.idle_timeout,
                           'hard_timeout': self.hard_timeout,
                           'cookie': self.cookie,
+                          'name': self.name,
                           'node_id': self.table.node.id,
                           'table_id': self.table.id,
                           'clean_id': self.get_clean_id(),
