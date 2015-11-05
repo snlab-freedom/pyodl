@@ -226,6 +226,15 @@ class ODLTable(object):
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
+    def delete_low_priority_flows(self, priority = 100):
+        """
+        This method will delete all flows on this table (config endpoint), but
+        only with low priority. Default is 100.
+        """
+        flows = self.get_config_flows()
+        for flow in flows.values():
+            if flow.priority <= priority:
+                flow.delete()
 
     def delete_flows(self):
         """
