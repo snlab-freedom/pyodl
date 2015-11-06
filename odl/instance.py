@@ -87,13 +87,16 @@ class ODLInstance(object):
             node_type = node_id.split(":")[0]
             if (node_type == "openflow"):
                 # Get the termination points. Here we have Switch to port links
-                for tp in node['termination-point']:
-                    tp_id = tp['tp-id']
-                    node_object = self.get_node_by_id(node_id)
-                    connector = node_object.get_connector_by_id(tp_id)
-                    base['nodes'].append(connector.to_dict())
-                    base['links'].append({'source': node_id,
-                                          'target': tp_id})
+                try:
+                    for tp in node['termination-point']:
+                        tp_id = tp['tp-id']
+                        node_object = self.get_node_by_id(node_id)
+                        connector = node_object.get_connector_by_id(tp_id)
+                        base['nodes'].append(connector.to_dict())
+                        base['links'].append({'source': node_id,
+                                              'target': tp_id})
+                except KeyError as e:
+                    pass
 
             elif (node_type == "host"):
                 # Get the attachment points. Here we have Host to port links

@@ -108,7 +108,12 @@ class ODLNode(object):
         """
         Return a dict with all connectors of this node.
         """
-        connectors = self.xml['node-connector']
+        try:
+            connectors = self.xml['node-connector']
+        except KeyError:
+            print "Error, switch without connectors"
+            print self.id, self.description, self.ip_address
+            return {}
         result = {}
         for connector in connectors:
             obj = ODLConnector(connector, self)
