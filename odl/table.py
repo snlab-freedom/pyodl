@@ -180,7 +180,7 @@ class ODLTable(object):
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
-    def l2output(self, connector_id, source, destination, template_dir):
+    def l2output(self, flow_name, connector_id, source, destination, template_dir):
         """
         This methods insert a flow using source MAC address and destination MAC
         address as match fields.
@@ -191,7 +191,7 @@ class ODLTable(object):
 
         connector = self.node.get_connector_by_id(connector_id)
 
-        flow = GenericFlow(name = "l2outputTest", table = self)
+        flow = GenericFlow(name = flow_name, table = self)
 
         with open(tpl, 'r') as f:
             template = Template(f.read())
