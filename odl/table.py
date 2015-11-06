@@ -159,6 +159,18 @@ class ODLTable(object):
         except KeyError:
             raise FlowNotFound("Flow id %s not found" % id)
 
+    def get_config_flows_by_name(self, name):
+        """
+        Return a list of config flows based on name.
+        """
+        result = []
+        flows = self.get_config_flows()
+        for flow in flows.values():
+            if flow.name == name:
+                result.append(flow)
+
+        return result
+
     def put_flow_from_data(self, data, flow):
         """
         Insert a flow in this table (config endpoint) based on raw xml data.

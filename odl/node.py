@@ -128,8 +128,15 @@ class ODLNode(object):
     def clear_flows(self):
         pass
 
-    def remove_flow(self, flow):
-        pass
+    def delete_config_flows_by_name(self, name):
+        """
+        Return a list of config flows based on name.
+        """
+        tables = self.get_tables()
+        for table in tables.values():
+            flows = table.get_config_flows_by_name(name)
+            for flow in flows:
+                flow.delete()
 
     def add_flow(self, flow):
         pass
