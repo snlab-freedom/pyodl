@@ -39,6 +39,11 @@ class ODLFlow(object):
         return self.xml['id']
 
     @property
+    def clean_id(self):
+        return str(re.sub(r'#|\$|-|\*','', self.id))
+
+
+    @property
     def priority(self):
         return self.xml['priority']
 
@@ -134,20 +139,42 @@ class ODLFlow(object):
         except KeyError:
             return "*"
 
+    def get_actions(self):
+        try:
+            actions = self.xml['instructions'].values()[0]
+        except KeyError as e:
+            actions = []
+
+        result = []
+        for action in actions:
+            try:
+                apply_action = action['apply-actions']['action'][0]
+            except KeyError as e:
+                continue
+            action_type = apply_action.keys()[0]
+            if action_type == 'output-action':
+                value = apply_action[action_type]['output-node-connector']
+                result.append({'type': action_type,
+                               'value': value})
+
+        return result
+
     def to_dict(self):
         base = {self.id: {'priority': self.priority,
                           'idle_timeout': self.idle_timeout,
                           'hard_timeout': self.hard_timeout,
                           'cookie': self.cookie,
                           'name': self.name,
+                          'id': self.id,
                           'node_id': self.table.node.id,
                           'table_id': self.table.id,
-                          'clean_id': self.get_clean_id(),
+                          'clean_id': self.clean_id,
                           'ethernet_match': {'type': self.get_ethernet_type(),
                                              'source': self.get_ethernet_source(),
                                              'destination': self.get_ethernet_destination()},
                           'ipv4_source': self.get_ipv4_source(),
                           'ipv4_destination': self.get_ipv4_destination(),
+                          'actions': self.get_actions(),
                           'stats': {'bytes': self.get_byte_count(),
                                     'packets': self.get_packet_count()}}}
         return base
@@ -162,9 +189,6 @@ class ODLFlow(object):
                                       self.priority,
                                       self.idle_timeout,
                                       self.hard_timeout)
-
-    def get_clean_id(self):
-        return str(re.sub(r'#|\$|-|\*','', self.id))
 
     def get_stats_seconds(self):
         """

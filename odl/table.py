@@ -159,6 +159,12 @@ class ODLTable(object):
         except KeyError:
             raise FlowNotFound("Flow id %s not found" % id)
 
+    def get_flow_by_clean_id(self, clean_id):
+        flows = self.get_config_flows()
+        for flow in flows.values():
+            if flow.clean_id == clean_id:
+                return flow
+
     def get_config_flows_by_name(self, name):
         """
         Return a list of config flows based on name.
@@ -235,6 +241,29 @@ class ODLTable(object):
                                      destination = destination,
                                      connector = connector)
 
+            return self.put_flow_from_data(data = parsed,
+                                           flow = flow)
+
+    def install_flow(self, priority, name, eth_type, eth_source,
+                     eth_destination,  ipv4_source, ipv4_destination,
+                     connector_id, template_dir):
+
+        tpl = os.path.join(template_dir, 'complete.tpl')
+        flow = GenericFlow(name = name,
+                           table = self,
+                           priority = priority)
+
+        with open(tpl, 'r') as f:
+            template = Template(f.read())
+            parsed = template.render(flow = flow,
+                                     eth_type = eth_type,
+                                     eth_source = eth_source,
+                                     eth_destination = eth_destination,
+                                     ipv4_source = ipv4_source,
+                                     ipv4_destination = ipv4_destination,
+                                     connector_id = connector_id)
+
+            print parsed
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
