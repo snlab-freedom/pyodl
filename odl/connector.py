@@ -35,6 +35,7 @@ class ODLConnector(object):
                 'status': self.status,
                 'port_number': self.port_number,
                 'hardware_address': self.hardware_address,
+                'addresses': self.get_addresses(),
                 'configuration': self.configuration,
                 'name': self.name}}
 
@@ -66,3 +67,9 @@ class ODLConnector(object):
     @property
     def configuration(self):
         return self.connector['flow-node-inventory:configuration']
+
+    def get_addresses(self):
+        try:
+            return self.connector['address-tracker:addresses']
+        except KeyError as e:
+            return []

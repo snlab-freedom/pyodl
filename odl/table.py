@@ -221,7 +221,7 @@ class ODLTable(object):
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
-    def l3output(self, connector_id, source, destination, template_dir):
+    def l3output(self, flow_name, connector_id, source, destination, template_dir):
         """
         This methods insert a flow using source address and destination address
         as match fields (both in ipv4).
@@ -232,7 +232,7 @@ class ODLTable(object):
 
         connector = self.node.get_connector_by_id(connector_id)
 
-        flow = GenericFlow(name = "l3outputTest", table = self)
+        flow = GenericFlow(name = flow_name, table = self)
 
         with open(tpl, 'r') as f:
             template = Template(f.read())
