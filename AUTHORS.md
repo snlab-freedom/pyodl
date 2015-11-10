@@ -5,5 +5,5 @@
  * Artur Baruchi <abaruchi AT ncc DOT unesp DOT br>
  * Rogerio Iope <rogerio AT ncc DOT unesp DOT br>
 
-This is a collaborative project between SPRACE (From São Paulo State University
-- Unesp) and Caltech (California Institute of Technology).
+This is a collaborative project between SPRACE (From São Paulo State University,
+Unesp) and Caltech (California Institute of Technology).
