@@ -18,11 +18,11 @@ with open('requirements.txt') as reqs:
 
 setup(
     name='python-odl',
-    version='0.0.1',
+    version='0.0.2',
     author='Beraldo Leal',
     author_email='beraldo@ncc.unesp.br',
     packages=["odl", "of"],
-    url='http://github.com/beraldoleal/python-odl/',
+    url='http://github.com/SPRACE/python-odl/',
     license='LICENSE.md',
     description='Python 2.x library for OpenDayLight interations via REST API.',
     install_requires=install_requires,
