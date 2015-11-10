@@ -7,7 +7,7 @@ except ImportError:
     extra = {}
 
 
-with open('README.md') as readme:
+with open('README.rst') as readme:
     long_description = readme.read()
 
 with open('requirements.txt') as reqs:
