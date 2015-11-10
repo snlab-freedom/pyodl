@@ -40,15 +40,24 @@ class ODLNode(object):
 
     @property
     def description(self):
-        return self.xml['flow-node-inventory:description']
+        try:
+            return self.xml['flow-node-inventory:description']
+        except KeyError as e:
+            return None
 
     @property
     def ip_address(self):
-        return self.xml['flow-node-inventory:ip-address']
+        try:
+            return self.xml['flow-node-inventory:ip-address']
+        except KeyError as e:
+            return None
 
     @property
     def manufacturer(self):
-        return self.xml['flow-node-inventory:manufacturer']
+        try:
+            return self.xml['flow-node-inventory:manufacturer']
+        except KeyError as e:
+            return None
 
     @property
     def serial_number(self):
@@ -56,11 +65,17 @@ class ODLNode(object):
 
     @property
     def hardware(self):
-        return self.xml['flow-node-inventory:hardware']
+        try:
+            return self.xml['flow-node-inventory:hardware']
+        except KeyError as e:
+            return None
 
     @property
     def software(self):
-        return self.xml['flow-node-inventory:software']
+        try:
+            return self.xml['flow-node-inventory:software']
+        except KeyError as e:
+            return None
 
     def to_dict(self):
         tables = self.get_tables().values()
