@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Authors:
-#          - Beraldo Leal <beraldo AT ncc DOT unesp DOT br>
+#          - Xiao Lin <linxiao9292 AT outlook DOT com>
 #
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
@@ -23,6 +23,7 @@ import json
 
 class ALTOSpce(object):
     """
+    Request Wrapper for ALTO SPCE (Simple Path Computation Engine) module.
     """
     def __init__(self, server, credentials, odl_instance):
         self.server = server
@@ -34,11 +35,31 @@ class ALTOSpce(object):
         endpoint = "/restconf/operations/alto-spce:alto-spce-setup"
         response = self.odl_instance.post(endpoint,
                                           data = data)
+        return response
+
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
-        data_src_dst = json.dumps({"input":{"endpoint":{"src":src,"dst":dst},"objective-metrics":objective_metrics,"constraint-metric":constraint_metric}})
-        self.__setup__(data_src_dst)
-        data_dst_src = json.dumps({"input":{"endpoint":{"src":dst,"dst":src},"objective-metrics":objective_metrics,"constraint-metric":constraint_metric}}) 
-        self.__setup__(data_dst_src)
+        data_src_dst = json.dumps({
+            "input": {
+                "endpoint": {
+                    "src": src,
+                    "dst": dst
+                },
+                "objective-metrics": objective_metrics,
+                "constraint-metric": constraint_metric
+            }
+        })
+        result = self.__setup__(data_src_dst)
+        data_dst_src = json.dumps({
+            "input": {
+                "endpoint": {
+                    "src": dst,
+                    "dst": src
+                },
+                "objective-metrics": objective_metrics,
+                "constraint-metric": constraint_metric
+            }
+        })
+        result = self.__setup__(data_dst_src)
 
     def __remove__(self, data):
         endpoint = "/restconf/operations/alto-spce:alto-spce-remove"
