@@ -31,11 +31,31 @@ class ALTOSpce(object):
         self.odl_instance = odl_instance
         self.headers = { 'Content-type' : 'application/json' }
 
-    def __setup__(self, data):
+    def setup_request(self, data):
         endpoint = "/restconf/operations/alto-spce:alto-spce-setup"
         response = self.odl_instance.post(endpoint,
                                           data = data)
         return response
+
+    def remove_request(self, data):
+        endpoint = "/restconf/operations/alto-spce:alto-spce-remove"
+        response = self.odl_instance.post(endpoint,
+                                          data = data)
+
+    def parse_response(output_data):
+        """
+        Parse the response from RPC.
+        """
+        result = json.loads(output_data)["output"]
+        pass
+        return result
+
+    def path_to_str(path):
+        """
+        Convert the path object to string.
+        """
+        pass
+        return ""
 
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
         data_src_dst = json.dumps({
@@ -48,7 +68,7 @@ class ALTOSpce(object):
                 "constraint-metric": constraint_metric
             }
         })
-        result = self.__setup__(data_src_dst)
+        result = parse_response(self.setup_request(data_src_dst))
         data_dst_src = json.dumps({
             "input": {
                 "endpoint": {
@@ -59,13 +79,8 @@ class ALTOSpce(object):
                 "constraint-metric": constraint_metric
             }
         })
-        result = self.__setup__(data_dst_src)
-
-    def __remove__(self, data):
-        endpoint = "/restconf/operations/alto-spce:alto-spce-remove"
-        response = self.odl_instance.post(endpoint,
-                                          data = data)
+        result = parse_response(self.setup_request(data_dst_src))
 
     def path_remove(self, path):
-       data = json.dumps({"input":{"path":path}})
-       self.__remove__(data)
+        data = json.dumps({"input": {"path": path_to_str(path)}})
+        self.remove_request(data)
