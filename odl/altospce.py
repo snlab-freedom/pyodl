@@ -42,22 +42,23 @@ class ALTOSpce(object):
         response = self.odl_instance.post(endpoint,
                                           data = data)
 
-    def parse_response(output_data):
+    def parse_response(output_src_dst, output_dst_src):
         """
         Parse the response from RPC.
         """
-        result = json.loads(output_data)["output"]
-        pass
+        result_src_dst = json.loads(output_src_dst)["output"]
+        result_dst_src = json.loads(output_dst_src)["output"]
+        result = {"error-code": "ERROR"}
+        if result_dst_src["error-code"] == "OK" and result_dst_src["error-code"] == "OK":
+            result["error-code": "OK"]
+            if "path" in result_src_dst.keys() and "path" in result_dst_src.keys():
+                result["path"] = [result_src_dst["path"], result_dst_src["path"]]
         return result
 
-    def path_to_str(path):
-        """
-        Convert the path object to string.
-        """
-        pass
-        return ""
-
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
+        """
+        Setup a round-trip path between source ip and destination ip and.
+        """
         data_src_dst = json.dumps({
             "input": {
                 "endpoint": {
@@ -68,7 +69,6 @@ class ALTOSpce(object):
                 "constraint-metric": constraint_metric
             }
         })
-        result = parse_response(self.setup_request(data_src_dst))
         data_dst_src = json.dumps({
             "input": {
                 "endpoint": {
@@ -79,8 +79,15 @@ class ALTOSpce(object):
                 "constraint-metric": constraint_metric
             }
         })
-        result = parse_response(self.setup_request(data_dst_src))
+        return parse_response(self.setup_request(data_dst_src),
+                              self.setup_request(data_src_dst))
 
     def path_remove(self, path):
-        data = json.dumps({"input": {"path": path_to_str(path)}})
-        self.remove_request(data)
+        """
+        Remove a round trip.
+        """
+        data = json.dumps({"input": {"path": path[0]}})
+        response_src_dst = self.remove_request(data)
+        data = json.dumps({"input": {"path": path[1]}})
+        response_dst_src = self.remove_request(data)
+        return parse_response(response_src_dst, response_dst_src)
