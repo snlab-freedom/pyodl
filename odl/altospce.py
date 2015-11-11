@@ -41,13 +41,14 @@ class ALTOSpce(object):
         endpoint = "/restconf/operations/alto-spce:alto-spce-remove"
         response = self.odl_instance.post(endpoint,
                                           data = data)
+        return response
 
     def parse_response(output_src_dst, output_dst_src):
         """
         Parse the response from RPC.
         """
-        result_src_dst = json.loads(output_src_dst)["output"]
-        result_dst_src = json.loads(output_dst_src)["output"]
+        result_src_dst = output_src_dst["output"]
+        result_dst_src = output_dst_src["output"]
         result = {"error-code": "ERROR"}
         if result_dst_src["error-code"] == "OK" and result_dst_src["error-code"] == "OK":
             result["error-code": "OK"]

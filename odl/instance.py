@@ -221,6 +221,7 @@ class ODLInstance(object):
                                 endpoint = self.server + endpoint,
                                 data = data,
                                 auth = self.credentials)
+        return json.loads(response.text)
 
     def update_xml(self):
         endpoint = "/restconf/operational/opendaylight-inventory:nodes/"
