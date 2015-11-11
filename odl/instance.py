@@ -156,6 +156,15 @@ class ODLInstance(object):
                                         auth = auth)
             except requests.exceptions.RequestException as e:
                 raise ODLErrorOnPUT(e)
+        elif method == "POST":
+            try:
+                response = requests.post(endpoint,
+                                         headers = headers,
+                                         data = data,
+                                         auth = auth)
+                print(response.text)
+            except requests.exceptions.RequestException as e:
+                raise ODLErrorOnPOST(e)
         elif method == "DELETE":
             try:
                 response = requests.delete(endpoint,
@@ -201,6 +210,16 @@ class ODLInstance(object):
         """
         response = self.request(method = "DELETE",
                                 endpoint = self.server + endpoint,
+                                auth = self.credentials)
+
+
+    def post(self, endpoint, data):
+        """
+        Sends a POST to endpoint.
+        """
+        response = self.request(method = "POST",
+                                endpoint = self.server + endpoint,
+                                data = data,
                                 auth = self.credentials)
 
     def update_xml(self):
