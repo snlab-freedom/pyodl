@@ -162,7 +162,6 @@ class ODLInstance(object):
                                          headers = headers,
                                          data = data,
                                          auth = auth)
-                print(response.text)
             except requests.exceptions.RequestException as e:
                 raise ODLErrorOnPOST(e)
         elif method == "DELETE":

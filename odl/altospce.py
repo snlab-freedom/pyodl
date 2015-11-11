@@ -43,7 +43,7 @@ class ALTOSpce(object):
                                           data = data)
         return response
 
-    def parse_response(output_src_dst, output_dst_src):
+    def parse_response(self, output_src_dst, output_dst_src):
         """
         Parse the response from RPC.
         """
@@ -51,7 +51,7 @@ class ALTOSpce(object):
         result_dst_src = output_dst_src["output"]
         result = {"error-code": "ERROR"}
         if result_dst_src["error-code"] == "OK" and result_dst_src["error-code"] == "OK":
-            result["error-code": "OK"]
+            result["error-code"] = "OK"
             if "path" in result_src_dst.keys() and "path" in result_dst_src.keys():
                 result["path"] = [result_src_dst["path"], result_dst_src["path"]]
         return result
@@ -80,7 +80,7 @@ class ALTOSpce(object):
                 "constraint-metric": constraint_metric
             }
         })
-        return parse_response(self.setup_request(data_dst_src),
+        return self.parse_response(self.setup_request(data_dst_src),
                               self.setup_request(data_src_dst))
 
     def path_remove(self, path):
@@ -91,4 +91,5 @@ class ALTOSpce(object):
         response_src_dst = self.remove_request(data)
         data = json.dumps({"input": {"path": path[1]}})
         response_dst_src = self.remove_request(data)
-        return parse_response(response_src_dst, response_dst_src)
+        return self.parse_response(response_src_dst, response_dst_src)
+
