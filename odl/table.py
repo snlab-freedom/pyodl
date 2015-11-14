@@ -165,6 +165,13 @@ class ODLTable(object):
             if flow.clean_id == clean_id:
                 return flow
 
+        # Try to get in operational flows
+        flows = self.get_operational_flows()
+        for flow in flows.values():
+            print flow.clean_id, clean_id
+            if flow.clean_id == clean_id:
+                return flow
+
     def get_config_flows_by_name(self, name):
         """
         Return a list of config flows based on name.
