@@ -4,6 +4,12 @@ This is a python library to handle OpenDayLight instance.
 
 ## Installing
 
+If you are trying to use the OpenFlow Next Generation Web User Interface
+(web-ui project), please follow the instructions on README.md of web-ui
+project.
+
+But, if you are trying to use this library in your project, keep reading here.
+
 This is a python module, you can install into your system, running:
 
 ```
