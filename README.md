@@ -1,4 +1,4 @@
-# README
+# OpenFlow Next Generation - python-odl
 
 This is a python library to handle OpenDayLight instance.
 
