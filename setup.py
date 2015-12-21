@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 try:
     from setuptools import setup
-    extra = dict(test_suite="tests.test.suite", include_package_data=True)
+    extra = dict(test_suite="tests.test.suite")
 except ImportError:
     from distutils.core import setup
     extra = {}
@@ -18,11 +18,13 @@ with open('requirements.txt') as reqs:
 
 setup(
     name='python-odl',
-    version='0.0.3',
+    version='0.0.4',
     author='Beraldo Leal',
     author_email='beraldo@ncc.unesp.br',
     packages=["odl", "of"],
-    url='http://github.com/SPRACE/python-odl/',
+    include_package_data=True,
+    data_files=[('/var/lib/data/python-odl/templates', ['templates/drop.tpl', 'templates/l2output.tpl', 'templates/l3output.tpl', 'templates/complete.tpl'])],
+    url='http://github.com/of-ng/python-odl/',
     license='LICENSE.md',
     description='Python 2.x library for OpenDayLight interations via REST API.',
     install_requires=install_requires,
