@@ -18,7 +18,7 @@ with open('requirements.txt') as reqs:
 
 setup(
     name='python-odl',
-    version='0.0.2',
+    version='0.0.3',
     author='Beraldo Leal',
     author_email='beraldo@ncc.unesp.br',
     packages=["odl", "of"],

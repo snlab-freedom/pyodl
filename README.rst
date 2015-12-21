@@ -12,6 +12,12 @@ This is a python module, you can install into your system, running:
 
     $ python2.7 setup.py install
 
+Or if you don't have the source, you can install via pip:
+
+::
+
+    $ sudo pip install python-odl
+
 Authors
 -------
 
