@@ -88,7 +88,7 @@ class ODLNode(object):
                 'hardware': self.hardware,
                 'type': 'switch',
                 'software': self.software,
-                'tables': [ table.to_dict() for table in tables],
+                'tables': { table.id: table.to_dict() for table in tables},
                 'connectors': {conn.id: conn.to_dict() for conn in conns}}
 
         return base

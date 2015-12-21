@@ -30,6 +30,7 @@ class ODLFlow(object):
     def __init__(self, xml, table):
         self.xml = xml
         self.table = table
+        self.active = False
 
     def __repr__(self):
         return "<ODLFlow: %s>" % self.id
@@ -160,23 +161,24 @@ class ODLFlow(object):
         return result
 
     def to_dict(self):
-        base = {self.id: {'priority': self.priority,
-                          'idle_timeout': self.idle_timeout,
-                          'hard_timeout': self.hard_timeout,
-                          'cookie': self.cookie,
-                          'name': self.name,
-                          'id': self.id,
-                          'node_id': self.table.node.id,
-                          'table_id': self.table.id,
-                          'clean_id': self.clean_id,
-                          'ethernet_match': {'type': self.get_ethernet_type(),
-                                             'source': self.get_ethernet_source(),
-                                             'destination': self.get_ethernet_destination()},
-                          'ipv4_source': self.get_ipv4_source(),
-                          'ipv4_destination': self.get_ipv4_destination(),
-                          'actions': self.get_actions(),
-                          'stats': {'bytes': self.get_byte_count(),
-                                    'packets': self.get_packet_count()}}}
+        base = {'priority': self.priority,
+                'idle_timeout': self.idle_timeout,
+                'hard_timeout': self.hard_timeout,
+                'cookie': self.cookie,
+                'name': self.name,
+                'id': self.id,
+                'node_id': self.table.node.id,
+                'active': self.active,
+                'table_id': self.table.id,
+                'clean_id': self.clean_id,
+                'ethernet_match': {'type': self.get_ethernet_type(),
+                                   'source': self.get_ethernet_source(),
+                                   'destination': self.get_ethernet_destination()},
+                'ipv4_source': self.get_ipv4_source(),
+                'ipv4_destination': self.get_ipv4_destination(),
+                'actions': self.get_actions(),
+                'stats': {'bytes': self.get_byte_count(),
+                          'packets': self.get_packet_count()}}
         return base
 
     def get_long_id(self):
