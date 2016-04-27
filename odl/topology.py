@@ -49,7 +49,10 @@ class ODLTopology(object):
 
     def get_links(self):
         topology = self.get_topology()
-        links = topology['link']
+        try:
+            links = topology['link']
+        except KeyError as e:
+            links = []
 
         result = {}
         for link in links:
