@@ -31,13 +31,15 @@ class ODLConnector(object):
         return "<ODLConnector: %s>" % self.id
 
     def to_dict(self):
-        base = {self.id: {
+        base = {
+                'id': self.id,
                 'status': self.status,
                 'port_number': self.port_number,
                 'hardware_address': self.hardware_address,
                 'addresses': self.get_addresses(),
                 'configuration': self.configuration,
-                'name': self.name}}
+                'type': 'port',
+                'name': self.name}
 
         return base
 

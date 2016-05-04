@@ -66,7 +66,9 @@ class ODLInstance(object):
         # TODO: Split this method into small methods
 
         # All switches nodes in dict format
-        base = {'nodes': [ node.to_dict() for node in self.get_nodes().values() ]}
+        base = {'nodes': {} }
+        for node in self.get_nodes().values():
+            base['nodes'][node.id] = node.to_dict()
 
         # These nodes and links are from ODL topology plugin.
         topology_nodes = self.topology.get_nodes()
@@ -76,8 +78,9 @@ class ODLInstance(object):
         for node in topology_nodes.values():
             node_id = node['node-id']
             if ((node_id.split(":")[0] == "host") and
-                (node not in base['nodes'])):
-                base['nodes'].append({node_id: node})
+                (not base['nodes'].has_key(node_id))):
+                node['type'] = 'host'
+                base['nodes'][node_id] = node
 
         # create links (base['links'] = [] with source and target
         base['links'] = []
@@ -92,9 +95,10 @@ class ODLInstance(object):
                         tp_id = tp['tp-id']
                         node_object = self.get_node_by_id(node_id)
                         connector = node_object.get_connector_by_id(tp_id)
-                        base['nodes'].append(connector.to_dict())
+                        base['nodes'][tp_id] = connector.to_dict()
                         base['links'].append({'source': node_id,
-                                              'target': tp_id})
+                                              'target': tp_id,
+                                              'type': 'port'})
                 except KeyError as e:
                     pass
 
@@ -103,7 +107,8 @@ class ODLInstance(object):
                 for ap in node['host-tracker-service:attachment-points']:
                     tp_id = ap['tp-id']
                     base['links'].append({'source': node_id,
-                                          'target': tp_id})
+                                          'target': tp_id,
+                                          'type': 'host'})
 
 
         # Create the port 2 port links
@@ -115,7 +120,8 @@ class ODLInstance(object):
             if ((s_type == "openflow") and (t_type == "openflow")):
                 # This is a link between two ports (switch - switch)
                 base['links'].append({'source': source,
-                                      'target': target})
+                                      'target': target,
+                                      'type': 'link'})
         ## Now, creat our port-switch links
         #for node in base['nodes']:
         #    id = node.keys()[0]

@@ -1,13 +1,25 @@
-# README
+# OpenFlow Next Generation - python-odl
 
 This is a python library to handle OpenDayLight instance.
 
 ## Installing
 
+If you are trying to use the OpenFlow Next Generation Web User Interface
+(web-ui project), please follow the instructions on README.md of web-ui
+project.
+
+But, if you are trying to use this library in your project, keep reading here.
+
 This is a python module, you can install into your system, running:
 
 ```
 $ python2.7 setup.py install
+```
+
+Or if you don't have the source, you can install via pip:
+
+```
+$ sudo pip install python-odl
 ```
 
 ## Authors

@@ -77,11 +77,8 @@ class ODLTable(object):
             return {}
 
     def to_dict(self):
-        config = self.get_config_flows().values()
-        operational = self.get_operational_flows().values()
-        base = {self.id:
-                {'config_flows': [flow.to_dict() for flow in config],
-                 'operational_flows': [flow.to_dict() for flow in operational]}}
+        base = {'id':self.id,
+                'flows': {flow.id: flow.to_dict() for flow in self.get_all_flows().values()}}
         return base
 
     def update(self):
@@ -147,6 +144,21 @@ class ODLTable(object):
             obj = ODLFlow(flow, self)
             result[obj.id] = obj
         return result
+
+    def get_all_flows(self):
+        """
+        Return a list with operational and config flows. Operational flows has
+        the flag active to true.
+        """
+        operational = self.get_operational_flows()
+        all_flows = self.get_config_flows()
+        for flow in operational.values():
+            if not all_flows.has_key(flow.id):
+                flow.active = True
+                all_flows[flow.id] = flow
+            else:
+                all_flows[flow.id].active = True
+        return all_flows
 
     def get_flow_by_id(self, id):
         """

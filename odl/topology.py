@@ -43,6 +43,7 @@ class ODLTopology(object):
         nodes = topology['node']
         result = {}
         for node in nodes:
+            node['id'] = node['node-id']
             result[node['node-id']] = node
 
         return result
