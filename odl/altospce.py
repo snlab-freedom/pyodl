@@ -58,7 +58,7 @@ class ALTOSpce(object):
 
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
         """
-        Setup a round-trip path between source ip and destination ip and.
+        Setup a round-trip path between source ip and destination ip.
         """
         data_src_dst = json.dumps({
             "input": {
@@ -93,3 +93,14 @@ class ALTOSpce(object):
         response_dst_src = self.remove_request(data)
         return self.parse_response(response_src_dst, response_dst_src)
 
+    def get_path(self, src, dst):
+        """
+        Query a path between source ip and destination ip.
+        """
+        pass
+
+    def set_tc(self, src, dst, bd, bs):
+        """
+        Traffic controlling for the path between source ip and destination ip.
+        """
+        pass
