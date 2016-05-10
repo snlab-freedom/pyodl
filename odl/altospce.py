@@ -99,8 +99,18 @@ class ALTOSpce(object):
         """
         pass
 
+    def parse_tc_response(self, response):
+        result = {"error-code": "ERROR", "path": "NULL"}
+        result_src_dst = response["output"]
+        if result_src_dst["error-code"] == "OK":
+            result["error-code"] = "OK"
+            if "path" in result_src_dst.keys():
+                result["path"] = result_src_dst["path"]
+        return result
+
     def set_tc(self, src, dst, bd, bs):
         """
+        Tc seting up, updating and removing are both one way!
         Traffic controlling for the path between source ip and destination ip.
         """
         endpoint = "/restconf/operations/alto-spce:rate-limiting-setup"
@@ -116,9 +126,38 @@ class ALTOSpce(object):
         })
         response = self.odl_instance.post(endpoint= endpoint,
                                           data = data_src_dst)
+        return self.parse_tc_response(response)
+
+    def update_tc(self, src, dst, bd, bs):
+        """
+        Tc seting up, updating and removing are both one way!
+        Update traffic controlling for the path between source ip and destination ip
+        """
+        endpoint = "/restconf/operations/alto-spce:rate-limiting-update"
+        data_src_dst = json.dumps({
+            "input": {
+                "endpoint": {
+                    "src": src,
+                    "dst": dst
+                },
+                "limited-rate": bd,
+                "burst-size": bs
+            }
+        })
+        response = self.odl_instance.post(endpoint= endpoint,
+                                          data = data_src_dst)
+        return self.parse_tc_response(response)
+
+    def remove_tc(self, path):
+        """
+        Tc seting up, updating and removing are both one way!
+        """
+        endpoint = "/restconf/operations/alto-spce:rate-limiting-remove"
+        data = json.dumps({"input": {"path": path}})
+        response = self.odl_instance.post(endpoint = endpoint,
+                                          data = data)
         result = {"error-code": "ERROR"}
         result_src_dst = response["output"]
         if result_src_dst["error-code"] == "OK":
             result["error-code"] = "OK"
         return result
-
