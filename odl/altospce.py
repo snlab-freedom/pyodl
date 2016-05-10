@@ -103,4 +103,22 @@ class ALTOSpce(object):
         """
         Traffic controlling for the path between source ip and destination ip.
         """
-        pass
+        endpoint = "/restconf/operations/alto-spce:rate-limiting-setup"
+        data_src_dst = json.dumps({
+            "input": {
+                "endpoint": {
+                    "src": src,
+                    "dst": dst
+                },
+                "limited-rate": bd,
+                "burst-size": bs
+            }
+        })
+        response = self.odl_instance.post(endpoint= endpoint,
+                                          data = data_src_dst)
+        result = {"error-code": "ERROR"}
+        result_src_dst = response["output"]
+        if result_src_dst["error-code"] == "OK":
+            result["error-code"] = "OK"
+        return result
+
