@@ -144,7 +144,7 @@ class ALTOSpce(object):
                 "burst-size": bs
             }
         })
-        response = self.odl_instance.post(endpoint= endpoint,
+        response = self.odl_instance.post(endpoint = endpoint,
                                           data = data_src_dst)
         return self.parse_tc_response(response)
 
@@ -161,3 +161,32 @@ class ALTOSpce(object):
         if result_src_dst["error-code"] == "OK":
             result["error-code"] = "OK"
         return result
+
+    def add_drop_meter(self, node_id, meter_id, bd, bs):
+        endpoint = "/restconf/config/opendaylight-inventory:nodes/node/" \
+                   + node_id + "/meter/" + str(meter_id)
+        meter_data = json.dumps({
+            "meter": {
+                "meter-id": meter_id,
+                "flags": "meter-kbps meter-burst",
+                "container-name": "altospce rate limiting container",
+                "meter-name": "altospce rate limiting",
+                "meter-band-headers": {
+                    "meter-band-header": {
+                        "band-id": 0,
+                        "meter-band-types": {
+                            "flags": "ofpmbt-drop"
+                        },
+                        "drop-rate": bd,
+                        "drop-burst-size": bs
+                    }
+                }
+            }
+        })
+        response = self.odl_instance.put(endpoint = endpoint,
+                                         data = meter_data)
+
+    def remove_drop_meter(self, node_id, meter_id):
+        endpoint = "/restconf/config/opendaylight-inventory:nodes/node/" \
+                   + node_id + "/meter/" + str(meter_id)
+        response = self.odl_instance.delete(endpoint = endpoint)
