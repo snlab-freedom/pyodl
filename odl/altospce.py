@@ -25,9 +25,7 @@ class ALTOSpce(object):
     """
     Request Wrapper for ALTO SPCE (Simple Path Computation Engine) module.
     """
-    def __init__(self, server, credentials, odl_instance):
-        self.server = server
-        self.credentials = credentials
+    def __init__(self, odl_instance):
         self.odl_instance = odl_instance
         self.headers = { 'Content-type' : 'application/json' }
 
