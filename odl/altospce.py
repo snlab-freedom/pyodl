@@ -41,6 +41,12 @@ class ALTOSpce(object):
                                           data = data)
         return response
 
+    def get_path_request(self, data):
+        endpoint = "/restconf/operations/alto-spce:get-path"
+        response = self.odl_instance.post(endpoint,
+                                          data = data)
+        return response
+
     def parse_response(self, output_src_dst, output_dst_src):
         """
         Parse the response from RPC.
@@ -95,7 +101,31 @@ class ALTOSpce(object):
         """
         Query a path between source ip and destination ip.
         """
-        pass
+        data = json.dumps({"input": {"endpoint": {"src": src, "dst": dst}}})
+        response = self.get_path_request(data)
+        return response["output"]
+
+    def get_all_paths(self):
+        """
+        Query all existing paths set by spce.
+        """
+        paths = []
+        hosts = self.get_all_hosts()
+        pairs = [(src, dst) for src in hosts for dst in hosts if src != dst]
+        for src, dst in pairs:
+            response = self.get_path(src, dst)
+            if response["error-code"] == "OK":
+                paths.append(response["path"])
+        return paths
+
+    def get_all_hosts(self):
+        hosts = set()
+        nodes = self.odl_instance.topology.get_nodes()
+        for node in nodes.values():
+            if node['node-id'].split(':')[0] == 'host':
+                for addr in node['host-tracker-service:addresses']:
+                    hosts.add(addr['ip'])
+        return list(hosts)
 
     def parse_tc_response(self, response):
         result = {"error-code": "ERROR", "path": "NULL"}
