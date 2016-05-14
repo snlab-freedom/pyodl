@@ -93,11 +93,34 @@ class ALTOSpce(object):
         response_dst_src = self.remove_request(data)
         return self.parse_response(response_src_dst, response_dst_src)
 
+    def get_path_request(self, data):
+        endpoint = "/restconf/operations/alto-spce:get-path"
+        response = self.odl_instance.get(endpoint = endpoint)
+        return response
+
     def get_path(self, src, dst):
         """
         Query a path between source ip and destination ip.
+        Return includes pathes from src to dst and from dst to src.
         """
-        pass
+        endpoint = "/restconf/operations/alto-spce:get-path"
+        data_src_dst = json.dumps({
+            "intput": {
+                "endpoint": {
+                    "src": src,
+                    "dst": dst
+                }
+            }
+        })
+        data_dst_src = json.dumps({
+            "intput": {
+                "endpoint": {
+                    "src": dst,
+                    "dst": src
+                }
+            }
+        })
+        return self.parse_response(self.get_path_request(data_src_dst), self.get_path_request(data_dst_src))
 
     def parse_tc_response(self, response):
         result = {"error-code": "ERROR", "path": "NULL"}
@@ -185,8 +208,14 @@ class ALTOSpce(object):
         })
         response = self.odl_instance.put(endpoint = endpoint,
                                          data = meter_data)
+        return response
 
     def remove_drop_meter(self, node_id, meter_id):
         endpoint = "/restconf/config/opendaylight-inventory:nodes/node/" \
                    + node_id + "/meter/" + str(meter_id)
         response = self.odl_instance.delete(endpoint = endpoint)
+
+    def get_bd_topology(self):
+        endpoint = "/restconf/operations/alto-spce:get-bandwidth-topology/"
+        response = self.odl_instance.post(endpoint = endpoint, data="")
+        return response
