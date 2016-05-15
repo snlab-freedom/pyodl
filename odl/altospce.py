@@ -51,8 +51,6 @@ class ALTOSpce(object):
         """
         Parse the response from RPC.
         """
-        result_src_dst = output_src_dst["output"]
-        result_dst_src = output_dst_src["output"]
         result = {"error-code": "OK"}
         for r in output:
             if r['output']['error-code'] != 'OK':
@@ -96,10 +94,6 @@ class ALTOSpce(object):
         """
         Remove a round trip.
         """
-        data = json.dumps({"input": {"path": path[0]}})
-        response_src_dst = self.remove_request(data)
-        data = json.dumps({"input": {"path": path[1]}})
-        response_dst_src = self.remove_request(data)
         response = []
         for p in path:
             data = json.dump({"input": {"path": p}})
