@@ -25,9 +25,7 @@ class ALTOSpce(object):
     """
     Request Wrapper for ALTO SPCE (Simple Path Computation Engine) module.
     """
-    def __init__(self, server, credentials, odl_instance):
-        self.server = server
-        self.credentials = credentials
+    def __init__(self, odl_instance):
         self.odl_instance = odl_instance
         self.headers = { 'Content-type' : 'application/json' }
 
@@ -43,17 +41,21 @@ class ALTOSpce(object):
                                           data = data)
         return response
 
-    def parse_response(self, output_src_dst, output_dst_src):
+    def get_path_request(self, data):
+        endpoint = "/restconf/operations/alto-spce:get-path"
+        response = self.odl_instance.post(endpoint,
+                                          data = data)
+        return response
+
+    def parse_response(self, *output):
         """
         Parse the response from RPC.
         """
-        result_src_dst = output_src_dst["output"]
-        result_dst_src = output_dst_src["output"]
-        result = {"error-code": "ERROR"}
-        if result_dst_src["error-code"] == "OK" and result_dst_src["error-code"] == "OK":
-            result["error-code"] = "OK"
-            if "path" in result_src_dst.keys() and "path" in result_dst_src.keys():
-                result["path"] = [result_src_dst["path"], result_dst_src["path"]]
+        result = {"error-code": "OK"}
+        for r in output:
+            if r['output']['error-code'] != 'OK':
+                result['error-code'] = 'ERROR'
+                break
         return result
 
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
@@ -87,11 +89,11 @@ class ALTOSpce(object):
         """
         Remove a round trip.
         """
-        data = json.dumps({"input": {"path": path[0]}})
-        response_src_dst = self.remove_request(data)
-        data = json.dumps({"input": {"path": path[1]}})
-        response_dst_src = self.remove_request(data)
-        return self.parse_response(response_src_dst, response_dst_src)
+        response = []
+        for p in path:
+            data = json.dumps({"input": {"path": p}})
+            response.append(self.remove_request(data))
+        return self.parse_response(*response)
 
     def get_path_request(self, data):
         endpoint = "/restconf/operations/alto-spce:get-path"
@@ -121,6 +123,35 @@ class ALTOSpce(object):
             }
         })
         return self.parse_response(self.get_path_request(data_src_dst), self.get_path_request(data_dst_src))
+        data = json.dumps({"input": {"endpoint": {"src": src, "dst": dst}}})
+        response = self.get_path_request(data)
+        return response["output"]
+
+    def get_all_paths(self):
+        """
+        Query all existing paths set by spce.
+        """
+        paths = []
+        hosts = self.get_all_hosts()
+        pairs = [(src, dst) for src in hosts for dst in hosts if src != dst]
+        for src, dst in pairs:
+            response = self.get_path(src, dst)
+            if response["error-code"] == "OK":
+                path = {}
+                path['path'] = response['path']
+                if 'bandwidth' in response.keys():
+                    path['tc'] = response['bandwidth']
+                paths.append(path)
+        return paths
+
+    def get_all_hosts(self):
+        hosts = set()
+        nodes = self.odl_instance.topology.get_nodes()
+        for node in nodes.values():
+            if node['node-id'].split(':')[0] == 'host':
+                for addr in node['host-tracker-service:addresses']:
+                    hosts.add(addr['ip'])
+        return list(hosts)
 
     def parse_tc_response(self, response):
         result = {"error-code": "ERROR", "path": "NULL"}
@@ -219,3 +250,17 @@ class ALTOSpce(object):
         endpoint = "/restconf/operations/alto-spce:get-bandwidth-topology/"
         response = self.odl_instance.post(endpoint = endpoint, data="")
         return response
+
+    def get_bandwidth_topology(self):
+        endpoint = "/restconf/operations/alto-spce:get-bandwidth-topology"
+        response = self.odl_instance.post(endpoint)
+        if response['error-code'] == 'OK':
+            return {
+                'tpid-map': json.loads(response['tpid-map']),
+                'bandwidth-topology': json.loads(response['bandwidth-topology'])
+            }
+        else:
+            return {
+                'tpid-map': [],
+                'bandwidth-topology': []
+            }

@@ -39,6 +39,9 @@ import json
 import sys
 import requests
 
+capacity_level = lambda f: 'hundred-ge' if 'hundred-gb-fd' in f else (
+                     'forty-ge' if 'forty-gb-fd' in f else 'ten-ge'
+                 )
 
 class ODLInstance(object):
     """
@@ -67,8 +70,11 @@ class ODLInstance(object):
 
         # All switches nodes in dict format
         base = {'nodes': {} }
+        capacity = {}
         for node in self.get_nodes().values():
             base['nodes'][node.id] = node.to_dict()
+            for connector in node.get_connectors().values():
+                capacity[connector.id] = capacity_level(connector.connector.get("flow-node-inventory:current-feature", ""))
 
         # These nodes and links are from ODL topology plugin.
         topology_nodes = self.topology.get_nodes()
@@ -98,6 +104,7 @@ class ODLInstance(object):
                         base['nodes'][tp_id] = connector.to_dict()
                         base['links'].append({'source': node_id,
                                               'target': tp_id,
+                                              'capacity': 'internal',
                                               'type': 'port'})
                 except KeyError as e:
                     pass
@@ -108,6 +115,7 @@ class ODLInstance(object):
                     tp_id = ap['tp-id']
                     base['links'].append({'source': node_id,
                                           'target': tp_id,
+                                          'capacity': capacity.get(tp_id, 'ten-ge'),
                                           'type': 'host'})
 
 
@@ -121,6 +129,7 @@ class ODLInstance(object):
                 # This is a link between two ports (switch - switch)
                 base['links'].append({'source': source,
                                       'target': target,
+                                      'capacity': capacity.get(source, 'ten-ge'),
                                       'type': 'link'})
         ## Now, creat our port-switch links
         #for node in base['nodes']:

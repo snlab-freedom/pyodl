@@ -87,7 +87,7 @@ class ODLNode(object):
                 'ip_address': self.ip_address,
                 'manufacturer': self.manufacturer,
                 'hardware': self.hardware,
-                'type': 'switch',
+                'type': 'ovs' if self.hardware == "Open vSwitch" else 'switch',
                 'software': self.software,
                 'tables': { table.id: table.to_dict() for table in tables},
                 'connectors': {conn.id: conn.to_dict() for conn in conns}}
