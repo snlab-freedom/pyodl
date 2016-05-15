@@ -47,17 +47,22 @@ class ALTOSpce(object):
                                           data = data)
         return response
 
-    def parse_response(self, output_src_dst, output_dst_src):
+    def parse_response(self, *output):
         """
         Parse the response from RPC.
         """
         result_src_dst = output_src_dst["output"]
         result_dst_src = output_dst_src["output"]
-        result = {"error-code": "ERROR"}
-        if result_dst_src["error-code"] == "OK" and result_dst_src["error-code"] == "OK":
-            result["error-code"] = "OK"
-            if "path" in result_src_dst.keys() and "path" in result_dst_src.keys():
-                result["path"] = [result_src_dst["path"], result_dst_src["path"]]
+        result = {"error-code": "OK"}
+        for r in output:
+            if r['output']['error-code'] != 'OK':
+                result['error-code'] = 'ERROR'
+                break
+        if result['error-code'] == 'OK':
+            paths = []
+            for r in output:
+                paths.append(r['output']['path'])
+            result['path'] = paths
         return result
 
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
@@ -95,7 +100,11 @@ class ALTOSpce(object):
         response_src_dst = self.remove_request(data)
         data = json.dumps({"input": {"path": path[1]}})
         response_dst_src = self.remove_request(data)
-        return self.parse_response(response_src_dst, response_dst_src)
+        response = []
+        for p in path:
+            data = json.dump({"input": {"path": p}})
+            response.append(self.remove_request(data))
+        return self.parse_response(*response)
 
     def get_path(self, src, dst):
         """
@@ -115,7 +124,11 @@ class ALTOSpce(object):
         for src, dst in pairs:
             response = self.get_path(src, dst)
             if response["error-code"] == "OK":
-                paths.append(response["path"])
+                path = {}
+                path['path'] = response['path']
+                if 'bandwidth' in response.keys():
+                    path['tc'] = response['bandwidth']
+                paths.append(path)
         return paths
 
     def get_all_hosts(self):
@@ -218,3 +231,17 @@ class ALTOSpce(object):
         endpoint = "/restconf/config/opendaylight-inventory:nodes/node/" \
                    + node_id + "/meter/" + str(meter_id)
         response = self.odl_instance.delete(endpoint = endpoint)
+
+    def get_bandwidth_topology(self):
+        endpoint = "/restconf/operations/alto-spce:get-bandwidth-topology"
+        response = self.odl_instance.post(endpoint)
+        if response['error-code'] == 'OK':
+            return {
+                'tpid-map': json.loads(response['tpid-map']),
+                'bandwidth-topology': json.loads(response['bandwidth-topology'])
+            }
+        else:
+            return {
+                'tpid-map': [],
+                'bandwidth-topology': []
+            }
