@@ -56,11 +56,6 @@ class ALTOSpce(object):
             if r['output']['error-code'] != 'OK':
                 result['error-code'] = 'ERROR'
                 break
-        if result['error-code'] == 'OK':
-            paths = []
-            for r in output:
-                paths.append(r['output']['path'])
-            result['path'] = paths
         return result
 
     def path_setup(self, src, dst, objective_metrics=[] , constraint_metric=[]):
@@ -96,7 +91,7 @@ class ALTOSpce(object):
         """
         response = []
         for p in path:
-            data = json.dump({"input": {"path": p}})
+            data = json.dumps({"input": {"path": p}})
             response.append(self.remove_request(data))
         return self.parse_response(*response)
 
