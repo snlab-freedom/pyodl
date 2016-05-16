@@ -41,12 +41,6 @@ class ALTOSpce(object):
                                           data = data)
         return response
 
-    def get_path_request(self, data):
-        endpoint = "/restconf/operations/alto-spce:get-path"
-        response = self.odl_instance.post(endpoint,
-                                          data = data)
-        return response
-
     def parse_response(self, *output):
         """
         Parse the response from RPC.
