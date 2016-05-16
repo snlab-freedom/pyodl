@@ -101,23 +101,6 @@ class ALTOSpce(object):
         Return includes pathes from src to dst and from dst to src.
         """
         endpoint = "/restconf/operations/alto-spce:get-path"
-        data_src_dst = json.dumps({
-            "intput": {
-                "endpoint": {
-                    "src": src,
-                    "dst": dst
-                }
-            }
-        })
-        data_dst_src = json.dumps({
-            "intput": {
-                "endpoint": {
-                    "src": dst,
-                    "dst": src
-                }
-            }
-        })
-        return self.parse_response(self.get_path_request(data_src_dst), self.get_path_request(data_dst_src))
         data = json.dumps({"input": {"endpoint": {"src": src, "dst": dst}}})
         response = self.get_path_request(data)
         return response["output"]
