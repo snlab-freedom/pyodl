@@ -31,6 +31,8 @@
 
        </ethernet-match>
 
+       <in-port>{{ in_port }}</in-port>
+
     </match>
 
     <instructions>
