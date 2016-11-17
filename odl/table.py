@@ -217,7 +217,7 @@ class ODLTable(object):
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
-    def l2output(self, flow_name, connector_id, source, destination, template_dir):
+    def l2output(self, flow_name, connector_id, source, destination, template_dir, **kargs):
         """
         This methods insert a flow using source MAC address and destination MAC
         address as match fields.
@@ -235,12 +235,12 @@ class ODLTable(object):
             parsed = template.render(flow = flow,
                                      source = source,
                                      destination = destination,
-                                     connector = connector)
+                                     connector = connector, **kargs)
 
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
-    def l3output(self, flow_name, connector_id, source, destination, template_dir):
+    def l3output(self, flow_name, connector_id, source, destination, template_dir, **kargs):
         """
         This methods insert a flow using source address and destination address
         as match fields (both in ipv4).
