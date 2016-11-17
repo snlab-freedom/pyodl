@@ -194,7 +194,7 @@ class ODLInstance(object):
 
         # Consider any status other than 2xx an error
         if not response.status_code // 100 == 2:
-            raise UnexpectedResponse(format(response))
+            raise UnexpectedResponse(format(response.text))
 
         #log.info("ODLInstance: %s %s" % (method, endpoint))
         return response
