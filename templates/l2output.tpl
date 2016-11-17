@@ -37,7 +37,7 @@
                <vlan-id-present>true</vlan-id-present>
            </vlan-match>
        {% endif %}
-
+       <in-port>{{ in_port }}</in-port>
     </match>
 
     <instructions>

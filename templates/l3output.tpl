@@ -26,6 +26,7 @@
        <ipv4-destination>{{ destination }}</ipv4-destination>
        {% endif %}
 
+       <in-port>{{ in_port }}</in-port>
 
     </match>
 
