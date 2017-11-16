@@ -25,7 +25,6 @@ from odl.exceptions import ODL404, FlowNotFound
 from of.flow import GenericFlow
 from jinja2 import Template
 
-import json
 import os
 
 class ODLTable(object):
@@ -93,6 +92,7 @@ class ODLTable(object):
             result = odl_instance.get(self.config_endpoint)
             self.config_table = result['flow-node-inventory:table'][0]
         except ODL404 as e:
+            # TODO: introduce logging system to report exception
             pass
 
     def get_operational_flows(self):
@@ -259,7 +259,7 @@ class ODLTable(object):
         with open(tpl, 'r') as f:
             template = Template(f.read())
             parsed = template.render(flow = flow,
-                                     in_port = in_port,
+                                     in_port = kargs.get('in_port', ''),
                                      source = source,
                                      destination = destination,
                                      connector = connector)
