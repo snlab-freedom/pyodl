@@ -190,7 +190,7 @@ class ODLInstance(object):
             raise NotImplemented("Method %s not implemented." % method)
 
         if response.status_code == 404:
-            raise ODL404("Endpoint not found: %s" % self.server + endpoint)
+            raise ODL404("Endpoint not found: %s" % endpoint)
 
         # Consider any status other than 2xx an error
         if not response.status_code // 100 == 2:

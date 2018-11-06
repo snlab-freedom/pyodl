@@ -19,6 +19,8 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
+from __future__ import print_function
+
 from odl.connector import ODLConnector
 from odl.table import ODLTable
 from odl.meter import ODLMeter
@@ -143,8 +145,8 @@ class ODLNode(object):
         try:
             connectors = self.xml['node-connector']
         except KeyError:
-            print "Error, switch without connectors"
-            print self.id, self.description, self.ip_address
+            print("Error, switch without connectors")
+            print(self.id, self.description, self.ip_address)
             return {}
         result = {}
         for connector in connectors:

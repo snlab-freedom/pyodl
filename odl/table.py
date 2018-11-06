@@ -20,6 +20,7 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
+from __future__ import print_function
 from odl.flow import ODLFlow
 from odl.exceptions import ODL404, FlowNotFound
 from of.flow import GenericFlow
@@ -180,7 +181,7 @@ class ODLTable(object):
         # Try to get in operational flows
         flows = self.get_operational_flows()
         for flow in flows.values():
-            print flow.clean_id, clean_id
+            print(flow.clean_id, clean_id)
             if flow.clean_id == clean_id:
                 return flow
 
@@ -239,6 +240,7 @@ class ODLTable(object):
                                      connector = connector,
                                      ingress_vlan = ingress_vlan,
                                      egress_vlan = egress_vlan)
+            print(parsed)
 
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
@@ -286,7 +288,6 @@ class ODLTable(object):
                                      ipv4_destination = ipv4_destination,
                                      connector_id = connector_id)
 
-            print parsed
             return self.put_flow_from_data(data = parsed,
                                            flow = flow)
 
