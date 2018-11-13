@@ -16,6 +16,10 @@ with open('requirements.txt') as reqs:
                                                      line.startswith('--'))
     ]
 
+def files(dirname):
+    from os import path, listdir
+    return [path.join(dirname, filename) for filename in listdir(dirname)]
+
 setup(
     name='python-odl',
     version='0.0.4',
@@ -28,7 +32,7 @@ setup(
     license='LICENSE.md',
     description='Python 2.x library for OpenDayLight interations via REST API.',
     install_requires=install_requires,
-    scripts=[],
+    scripts=files('bin'),
     keywords = ['odl', 'opendayligh', 'sdn', 'openflow', 'python', 'library', 'rest', 'api'],
     platforms = "Posix; MacOS X;",
     classifiers = ["Development Status :: 2 - Pre-Alpha",

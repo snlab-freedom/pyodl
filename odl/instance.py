@@ -26,17 +26,15 @@ restconf endpoints.
 # -*- coding: utf-8 -*-
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
-from odl.flow import ODLFlow
 from odl.node import ODLNode
-from odl.table import ODLTable
 from odl.topology import ODLTopology
 
-from odl.exceptions import *
+from odl.exceptions import ODLErrorOnGET, ODLErrorOnPUT, ODLErrorOnPOST, ODLErrorOnDELETE
+from odl.exceptions import ODL404, NodeNotFound, UnexpectedResponse
 
 #from odl import log
 
 import json
-import sys
 import requests
 
 capacity_level = lambda f: 'hundred-ge' if 'hundred-gb-fd' in f else (
@@ -107,7 +105,7 @@ class ODLInstance(object):
                                               'capacity': 'internal',
                                               'type': 'port'})
                 except KeyError as e:
-                    pass
+                    print(e)
 
             elif (node_type == "host"):
                 # Get the attachment points. Here we have Host to port links
@@ -187,7 +185,7 @@ class ODLInstance(object):
             except requests.exceptions.RequestException as e:
                 raise ODLErrorOnDELETE(e)
         else:
-            raise NotImplemented("Method %s not implemented." % method)
+            raise NotImplementedError("Method %s not implemented." % method)
 
         if response.status_code == 404:
             raise ODL404("Endpoint not found: %s" % endpoint)
@@ -217,6 +215,7 @@ class ODLInstance(object):
                                 data = data,
                                 auth = self.credentials,
                                 content = content)
+        return response
 
     def delete(self, endpoint):
         """
@@ -225,16 +224,18 @@ class ODLInstance(object):
         response = self.request(method = "DELETE",
                                 endpoint = self.server + endpoint,
                                 auth = self.credentials)
+        return response
 
 
-    def post(self, endpoint, data):
+    def post(self, endpoint, data, content="application/json"):
         """
         Sends a POST to endpoint.
         """
         response = self.request(method = "POST",
                                 endpoint = self.server + endpoint,
                                 data = data,
-                                auth = self.credentials)
+                                auth = self.credentials,
+                                content = content)
         return json.loads(response.text)
 
     def update_xml(self):

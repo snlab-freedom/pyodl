@@ -1,0 +1,194 @@
+#!/usr/bin/env python
+
+import json
+import argparse
+
+
+DEFAULT_TABLE_ID = 0
+
+
+def getParser():
+    import os
+    import sys
+    parser = argparse.ArgumentParser(prog=sys.argv[0],
+                                     description="CLI utility for OpenDaylight")
+    parser.add_argument('-c', '--config',
+                        help="override the configuration file",
+                        metavar="CONFIG", default=os.path.join(os.getenv('HOME'), '.odlrc'))
+
+    subparsers = parser.add_subparsers(help="commands", dest='command')
+
+    # Karaf access commands
+    add_login_cmd_opts(subparsers)
+
+    add_list_switch_cmd_opts(subparsers)
+
+    # Flow table operation commands
+    add_list_flows_cmd_opts(subparsers)
+    add_list_all_flows_cmd_opts(subparsers)
+    add_delete_flow_cmd_opts(subparsers)
+    add_add_flow_cmd_opts(subparsers)
+
+    # Topology information commands
+    add_dump_topo_cmd_opts(subparsers)
+    add_dump_inv_cmd_opts(subparsers)
+
+    return parser.parse_args()
+
+def add_login_cmd_opts(subparsers):
+    login_parser = subparsers.add_parser('login', help="login to the OpenDaylight karaf")
+    login_parser.add_argument('-a', '--addr', dest='addr',
+                              help="ip address of the OpenDaylight")
+    login_parser.add_argument('-p', '--port', dest='port', type=int,
+                              help="ssh port of the OpenDaylight karaf")
+    login_parser.add_argument('-l', '--login', dest='login',
+                              help="login name of the OpenDaylight karaf")
+    login_parser.add_argument('-P', '--password', dest='password',
+                              help="passwod of the OpenDaylight karaf")
+
+def add_list_switch_cmd_opts(subparsers):
+    list_switch_parser = subparsers.add_parser('list-switch', help="list switch info")
+    list_switch_parser.add_argument('--pretty', action='store_true', help="beautify the print data")
+    list_switch_parser.add_argument('switch', nargs='?',
+                                    help="which switch to lookup (not specify to show all)")
+
+def add_list_flows_cmd_opts(subparsers):
+    list_flows_parser = subparsers.add_parser('list-flows', help="list flow table of a switch")
+    list_flows_parser.add_argument('switch', action='store', help="which switch to lookup")
+
+def add_list_all_flows_cmd_opts(subparsers):
+    subparsers.add_parser('list-all-flows', help="list flow tables of all switches")
+
+def add_delete_flow_cmd_opts(subparsers):
+    delete_flow_parser = subparsers.add_parser('delete-flow', help="delete a flow from a switch")
+    delete_flow_parser.add_argument('switch', action='store', help="which switch to operate")
+    delete_flow_parser.add_argument('match', action='store', help="delete all matched flow rules")
+
+def add_add_flow_cmd_opts(subparsers):
+    add_flow_parser = subparsers.add_parser('add-flow', help="add a flow to a switch")
+    add_flow_parser.add_argument('switch', action='store', help="which switch to operate")
+
+def add_dump_topo_cmd_opts(subparsers):
+    dump_topo_parser = subparsers.add_parser('dump-topo',
+                                             help="dump the topology from OpenDaylight DataStore")
+    dump_topo_parser.add_argument('--pretty', help="beautify the dump data")
+
+def add_dump_inv_cmd_opts(subparsers):
+    dump_inv_parser = subparsers.add_parser('dump-inv',
+                                            help="dump the inventory from OpenDaylight DataStore")
+    dump_inv_parser.add_argument('--pretty', help="beautify the dump data")
+
+
+def executeCommand(args):
+    args.config = readConfig(args.config)
+
+    if args.command == 'login':
+        run_login_cmd(args)
+    elif args.command == 'list-switch':
+        run_list_switch_cmd(args)
+    elif args.command == 'list-flows':
+        run_list_flows_cmd(args)
+    elif args.command == 'list-all-flows':
+        run_list_all_flows_cmd(args)
+    elif args.command == 'delete-flow':
+        run_delete_flow_cmd(args)
+    elif args.command == 'add-flow':
+        run_add_flow_cmd(args)
+    elif args.command == 'dump-topo':
+        run_dump_topo_cmd(args)
+    elif args.command == 'dump-inv':
+        run_dump_inv_cmd(args)
+
+def getODLInstance(args):
+    from odl.instance import ODLInstance
+    odl_info = args.config.get('controller', {})
+    credentials = (odl_info.get('user'), odl_info.get('password'))
+    odl = ODLInstance('http://%s:%d' % (odl_info.get('ip'), odl_info.get('port')), credentials)
+    return odl
+
+def run_login_cmd(args):
+    raise NotImplementedError
+
+def run_list_switch_cmd(args):
+    odl = getODLInstance(args)
+    node_id = args.switch
+    if not node_id:
+        nodes = odl.get_nodes()
+        for node in nodes.values():
+            print(node.id, node.manufacturer, node.description, node.ip_address)
+    else:
+        node = odl.get_node_by_id(node_id)
+        print(json.dumps(node.xml, indent=2 if args.pretty else None))
+
+def run_list_flows_cmd(args):
+    odl = getODLInstance(args)
+    node_id = args.switch
+    table_id = DEFAULT_TABLE_ID
+
+    # TODO: Keep track on the NodeNotFound and TableNotFound exception
+    node = odl.get_node_by_id(node_id)
+    table = node.get_table_by_id(table_id)
+    flows = table.get_all_flows()
+
+    # print('Printing flow table %d for switch %s...' % (table_id, node_id))
+    for flow in flows.values():
+        print(flow.id)
+
+def run_list_all_flows_cmd(args):
+    odl = getODLInstance(args)
+    nodes = odl.get_nodes()
+    table_id = DEFAULT_TABLE_ID
+
+    for node in nodes.values():
+        table = node.get_table_by_id(table_id)
+        flows = table.get_all_flows()
+        print("\nflows in switch %s :\n" % node.id)
+        for flow in flows.values():
+            print(flow.id)
+
+def matchedFlow(flow, match):
+    if not match:
+        return True
+    # TODO: Parse match string as ovs style
+    return False
+
+def run_delete_flow_cmd(args):
+    odl = getODLInstance(args)
+    node_id = args.switch
+    table_id = DEFAULT_TABLE_ID
+    match = args.match
+
+    # TODO: Keep track on the NodeNotFound and TableNotFound exception
+    node = odl.get_node_by_id(node_id)
+    table = node.get_table_by_id(table_id)
+    flows = table.get_all_flows()
+
+    print('Deleting flows matching [%s] in switch %s...' % ())
+    for flow in flows.values():
+        if matchedFlow(flow, match):
+            flow.delete()
+    raise NotImplementedError
+
+def run_add_flow_cmd(args):
+    raise NotImplementedError
+
+def run_dump_topo_cmd(args):
+    raise NotImplementedError
+
+def run_dump_inv_cmd(args):
+    raise NotImplementedError
+
+
+def readConfig(filename):
+    import toml
+    try:
+        with open(filename) as configfile:
+            config = toml.load(configfile)
+    except Exception:
+        config = {}
+    return config
+
+
+if __name__ == '__main__':
+    args = getParser()
+    executeCommand(args)

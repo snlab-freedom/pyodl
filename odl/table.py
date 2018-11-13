@@ -94,7 +94,7 @@ class ODLTable(object):
             self.config_table = result['flow-node-inventory:table'][0]
         except ODL404 as e:
             # TODO: introduce logging system to report exception
-            pass
+            print(e)
 
     def get_operational_flows(self):
         """
@@ -308,3 +308,13 @@ class ODLTable(object):
         flows = self.get_config_flows()
         for flow in flows.values():
            flow.delete()
+
+    def sal_remove_flow(self, match):
+        """
+        Delete flow in this table by sal-del
+        """
+        rpc_endpoint = "/restconf/operations/sal-flow:remove-flow"
+        rpc_input = {}
+        rpc_input['table_id'] = self.id
+        data = {'input': rpc_input}
+        self.node.odl_instance.post(rpc_endpoint, data)
