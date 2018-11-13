@@ -107,7 +107,17 @@ def getODLInstance(args):
     return odl
 
 def run_login_cmd(args):
-    raise NotImplementedError
+    import subprocess
+    base_karaf_info = args.config.get('karaf', {})
+    odl_info = args.config.get('controller', {})
+    ip = odl_info.get('ip')
+    port = args.port or base_karaf_info.get('port')
+    login = args.login or base_karaf_info.get('login')
+    # password = args.password or base_karaf_info.get('password')
+
+    subprocess.call("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p %d %s@%s"
+                    % (port, login, ip))
+    # TODO: Connect to ssh session without typing password
 
 def run_list_switch_cmd(args):
     odl = getODLInstance(args)
