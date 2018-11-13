@@ -116,7 +116,7 @@ def run_login_cmd(args):
     # password = args.password or base_karaf_info.get('password')
 
     subprocess.call("ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p %d %s@%s"
-                    % (port, login, ip))
+                    % (port, login, ip), shell=True)
     # TODO: Connect to ssh session without typing password
 
 def run_list_switch_cmd(args):
